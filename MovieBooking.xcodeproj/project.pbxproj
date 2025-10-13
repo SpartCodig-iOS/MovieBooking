@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F24B91D52E9D1A5800EF7944 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = F24B91D42E9D1A5800EF7944 /* ComposableArchitecture */; };
+		F24B91D82E9D1A8B00EF7944 /* TCACoordinators in Frameworks */ = {isa = PBXBuildFile; productRef = F24B91D72E9D1A8B00EF7944 /* TCACoordinators */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F24B8FF82E9D0D2B00EF7944 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F24B91D82E9D1A8B00EF7944 /* TCACoordinators in Frameworks */,
+				F24B91D52E9D1A5800EF7944 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +119,8 @@
 			);
 			name = MovieBooking;
 			packageProductDependencies = (
+				F24B91D42E9D1A5800EF7944 /* ComposableArchitecture */,
+				F24B91D72E9D1A8B00EF7944 /* TCACoordinators */,
 			);
 			productName = MovieBooking;
 			productReference = F24B8FEA2E9D0D2900EF7944 /* MovieBooking.app */;
@@ -195,6 +204,10 @@
 			);
 			mainGroup = F24B8FE12E9D0D2900EF7944;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F24B91D32E9D1A5800EF7944 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				F24B91D62E9D1A8B00EF7944 /* XCRemoteSwiftPackageReference "TCACoordinators" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F24B8FEB2E9D0D2900EF7944 /* Products */;
 			projectDirPath = "";
@@ -578,6 +591,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F24B91D32E9D1A5800EF7944 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.22.3;
+			};
+		};
+		F24B91D62E9D1A8B00EF7944 /* XCRemoteSwiftPackageReference "TCACoordinators" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnpatrickmorgan/TCACoordinators";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F24B91D42E9D1A5800EF7944 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F24B91D32E9D1A5800EF7944 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		F24B91D72E9D1A8B00EF7944 /* TCACoordinators */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F24B91D62E9D1A8B00EF7944 /* XCRemoteSwiftPackageReference "TCACoordinators" */;
+			productName = TCACoordinators;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F24B8FE22E9D0D2900EF7944 /* Project object */;
 }
