@@ -17,7 +17,7 @@ struct SplashView: View {
         gradient: Gradient(colors: [
           .white,
           .white,
-          .megaboxPrimary.opacity(0.05)
+          .basicPurple.opacity(0.05)
         ]),
         startPoint: .top,
         endPoint: .bottom
@@ -47,7 +47,7 @@ extension SplashView {
   fileprivate func splashLogo() -> some View {
     ZStack {
       Circle()
-        .fill(.megaboxPrimary.opacity(0.20))
+        .fill(.basicPurple.opacity(0.20))
         .blur(radius: 24)
         .scaleEffect(store.pulse ? 1.08 : 0.95)
         .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: store.pulse)
@@ -56,7 +56,7 @@ extension SplashView {
         .fill(
           LinearGradient(
             colors: [
-              .megaboxPrimary,
+              .basicPurple,
               Color.purple
             ],
             startPoint: .topLeading,

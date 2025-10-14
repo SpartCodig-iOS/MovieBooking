@@ -36,15 +36,15 @@ extension LoginView {
       .fill(
         LinearGradient(
           colors: [
-            .megaboxPrimary,
-            .megaboxViolet   
+            .basicPurple,
+            .violet
           ],
           startPoint: .topLeading,
           endPoint: .bottomTrailing
         )
       )
       .frame(width: 120, height: 120)
-      .shadow(color: .megaboxPrimary.opacity(0.3), radius: 16, x: 0, y: 8)
+      .shadow(color: .basicPurple.opacity(0.3), radius: 16, x: 0, y: 8)
       .overlay(
         Image(systemName: "film.fill")
           .pretendardFont(family: .medium, size: 48)
