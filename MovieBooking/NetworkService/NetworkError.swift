@@ -66,5 +66,22 @@ struct NetworkWithErrorHandling {
         }
     }
     
-    
+    func request<T: Decodable>(
+        urlString: String,
+        responseType: T.Type
+    ) async throws -> T {
+        // 1. Data 받아오기
+        let data = try await request(urlString: urlString)
+        
+        // 2. JSON Decoder로 자동 생성
+        do {
+            let decoder = JSONDecoder()
+            // JSON의 snak_case를 camelCase로 자동변환 (선택사항)
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let decodedObject = try decoder.decode(T.self, from: data)
+            return decodedObject
+        } catch {
+            throw NetworkError.decodingError
+        }
+    }
 }
