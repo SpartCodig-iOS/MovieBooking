@@ -184,7 +184,7 @@
     {
       "identity" : "weavedi",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Roy-wonji/WeaveDI.git",
+      "location" : "https://github.com/Roy-wonji/WeaveDI",
       "state" : {
         "revision" : "89728f122d41633d8ebac182fc15040065e2492c",
         "version" : "3.3.1"

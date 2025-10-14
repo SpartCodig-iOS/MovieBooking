@@ -16,7 +16,6 @@ public struct Login {
 
   @ObservableState
   public struct State: Equatable, Hashable {
-    let id = UUID()
     public init() {}
   }
 

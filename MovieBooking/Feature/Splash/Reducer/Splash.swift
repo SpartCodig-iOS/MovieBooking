@@ -17,7 +17,7 @@ public struct Splash {
 
   @ObservableState
   public struct State: Equatable, Hashable {
-    public let id = UUID()
+    
     var fadeOut: Bool = false
     var pulse: Bool = false
     public init() {}
@@ -104,8 +104,6 @@ extension Splash {
 
           try await clock.sleep(for: .seconds(1.3))
           await send(.inner(.setFadeOut(true)))
-
-
           await send(.navigation(.presentLogin))
         }
     }

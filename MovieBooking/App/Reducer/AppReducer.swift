@@ -86,13 +86,13 @@ extension AppReducer {
     switch action {
       case .splash(.navigation(.presentLogin)):
       return .run { send in
-        try await clock.sleep(for: .seconds(2))
+        try await clock.sleep(for: .seconds(1))
         await send(.view(.presentAuth))
       }
 
     case .splash(.navigation(.presentMain)):
       return .run { send in
-        try await clock.sleep(for: .seconds(2))
+        try await clock.sleep(for: .seconds(1))
         await send(.view(.presentMain))
       }
 

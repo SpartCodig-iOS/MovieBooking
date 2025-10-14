@@ -36,7 +36,6 @@ struct SplashView: View {
       .onAppear {
         store.send(.view(.onAppear))
       }
-
     }
   }
 }
