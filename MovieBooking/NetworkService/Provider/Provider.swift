@@ -39,6 +39,27 @@ class NetworkProvider {
         return try decode(data)
     }
     
+    // Response가 없는 request 메서드
+    func request(
+        _ urlConvertible: URLRequestConvertible
+    ) async throws {
+        // 고유 Request ID 생성
+        let requestID = UUID().uuidString.prefix(8).uppercased()
+        
+        // 1. URLRequest 만들기
+        let request = try urlConvertible.asURLRequest()
+        eventMonitors.forEach { monitor in
+            Task.detached {
+                await monitor.requestDidStart(request, id: requestID)
+            }
+        }
+        
+        // 2. 네트워크 요청 실행
+        try await performRequest(request, requestID)
+        return
+    }
+    
+    @discardableResult
     private func performRequest(
         _ request: URLRequest,
         _ requestID: String
@@ -54,20 +75,11 @@ class NetworkProvider {
             
             // 상태 코드 확인
             guard (200...299).contains(httpResponse.statusCode) else {
-                let error = NetworkError.httpError(statusCode: httpResponse.statusCode)
-                eventMonitors.forEach {  monitor in
-                    Task.detached {
-                        await monitor.requestDidFinish(
-                            request,
-                            response: httpResponse,
-                            data: data,
-                            error: error,
-                            duration: duration,
-                            id: requestID
-                        )
-                    }
-                }
-                throw error
+                throw NetworkError.httpError(
+                    statusCode: httpResponse.statusCode,
+                    response: httpResponse,
+                    data: data
+                )
             }
             
             eventMonitors.forEach { monitor in
@@ -84,20 +96,29 @@ class NetworkProvider {
             }
             
             return data
-        } catch let error as NetworkError {
-            let duration = Date().timeIntervalSince(startTime)
-            eventMonitors.forEach { monitor in
-                Task.detached {
-                    await monitor.requestDidFinish(request, response: nil, data: nil, error: error, duration: duration, id: String(requestID))
-                }
-            }
-            throw error
         } catch {
             let duration = Date().timeIntervalSince(startTime)
-            let networkError = NetworkError.unknown(error)
+            let networkError = error as? NetworkError ?? NetworkError.unknown(error)
+            
+            // httpError인 경우 response/data 추출
+            var response: HTTPURLResponse?
+            var responseData: Data?
+            
+            if case .httpError(_, let res, let dat) = networkError {
+                response = res
+                responseData = dat
+            }
+            
             eventMonitors.forEach { monitor in
                 Task.detached {
-                    await monitor.requestDidFinish(request, response: nil, data: nil, error: networkError, duration: duration, id: String(requestID))
+                    await monitor.requestDidFinish(
+                        request,
+                        response: response,
+                        data: responseData,
+                        error: networkError,
+                        duration: duration,
+                        id: requestID
+                    )
                 }
             }
             throw networkError

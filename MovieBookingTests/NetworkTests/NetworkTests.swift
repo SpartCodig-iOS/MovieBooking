@@ -26,6 +26,7 @@ enum UserAPI {
     case search(SearchUserQuery)
     case create(CreateUserBody)
     case update(id: Int, name: String)
+    case delete(id: Int)
 }
 
 extension UserAPI: TargetType {
@@ -41,6 +42,8 @@ extension UserAPI: TargetType {
             return "/users"
         case .update(let id, _):
             return "/users/\(id)"
+        case .delete(let id):
+            return "/users/\(id)"
         }
     }
     
@@ -52,6 +55,8 @@ extension UserAPI: TargetType {
             return .post
         case .update:
             return .put
+        case .delete:
+            return .delete
         }
     }
     
@@ -61,7 +66,7 @@ extension UserAPI: TargetType {
     
     var parameters: ParameterEncoding? {
         switch self {
-        case .user:
+        case .user, .delete:
             return nil
         case .search(let request):
             return .query(request)
@@ -128,5 +133,14 @@ struct NetworkTests {
         )
         print("\n✅ 사용자 업데이트: \(updatedUser)")
         #expect(updatedUser.name == "김철수")
+    }
+    
+    @Test("Delete 요청 테스트")
+    func deleteRequestTest() async throws {
+        try await provider.request(
+            UserAPI.delete(id: 1)
+        )
+        print("\n✅ 사용자 삭제")
+        #expect(true)
     }
 }

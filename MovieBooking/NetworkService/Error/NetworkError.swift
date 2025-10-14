@@ -11,7 +11,7 @@ enum NetworkError: Error {
     case invalidURL         // 유효하지 않은 URL
     case noData             // 응답 데이터가 없음
     case invalidResponse    // HTTPResponse가 아님
-    case httpError(statusCode: Int) // HTTTP 에러 (400, 500 등)
+    case httpError(statusCode: Int, response: HTTPURLResponse?, data: Data?) // HTTTP 에러 (400, 500 등)
     case decodingError(Error)      // JSON 파싱 에러
     case encodingError(Error)
     case unknown(Error)     // 예상하지 못한 에러
@@ -26,7 +26,7 @@ extension NetworkError: LocalizedError {
             return "응답 데이터가 없습니다"
         case .invalidResponse:
             return "올바르지 않은 응답입니다"
-        case .httpError(let statusCode):
+        case .httpError(let statusCode, _, _):
             return "HTTP 에러: \(statusCode)"
         case .decodingError:
             return "데이터 파싱에 실패했습니다"
