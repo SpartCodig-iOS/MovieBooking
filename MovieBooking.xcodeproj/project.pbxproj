@@ -40,6 +40,8 @@
 			membershipExceptions = (
 				NetworkService/HTTPMethod.swift,
 				NetworkService/NetworkError.swift,
+				NetworkService/NetworkEventMonitor.swift,
+				NetworkService/NetworkLogger.swift,
 				NetworkService/ParameterEncoding.swift,
 				NetworkService/Provider.swift,
 				NetworkService/TargetType.swift,
