@@ -33,10 +33,13 @@ class NetworkProvider {
         }
         
         // 2. 쿼리 파라미터 처리
-        if case .query(let params) = target.parameters {
-            components.queryItems = params.map({ key, value in
-                URLQueryItem(name: key, value: "\(value)")
-            })
+        if case .query(let encodable) = target.parameters {
+            do {
+                let queryDict = try encodable.toDictionary()
+                components.queryItems = queryDict.map { URLQueryItem(name: $0.key, value: $0.value) }
+            } catch {
+                throw NetworkError.encodingError(error)
+            }
         }
         
         guard let url = components.url else { // 쿼리가 있다면 components.url에서 query가 들어간 url이 나옴
@@ -46,9 +49,10 @@ class NetworkProvider {
         var request = URLRequest(url: url)
         request.httpMethod = target.method.rawValue
         
-        if case .body(let params) = target.parameters {
+        if case .body(let encodable) = target.parameters {
             do {
-                request.httpBody = try JSONSerialization.data(withJSONObject: params)
+                let encoder = JSONEncoder()
+                request.httpBody = try encoder.encode(encodable)
             } catch {
                 throw NetworkError.encodingError(error)
             }

@@ -8,10 +8,23 @@
 import Testing
 @testable import MovieBooking
 
+
+// 검색 쿼리 파라미터
+struct SearchUserQuery: Encodable {
+    let username: String
+}
+
+// 사용자 생성 Body
+struct CreateUserBody: Encodable {
+    let name: String
+    let email: String
+    let username: String?
+}
+
 enum UserAPI {
     case user(id: Int)
-    case search(name: String)
-    case create(name: String, email: String)
+    case search(SearchUserQuery)
+    case create(CreateUserBody)
     case update(id: Int, name: String)
 }
 
@@ -50,13 +63,10 @@ extension UserAPI: TargetType {
         switch self {
         case .user:
             return nil
-        case .search(let name):
-            return .query(["username": name])
-        case .create(let name, let email):
-            return .body([
-                "name": name,
-                "email": email
-            ])
+        case .search(let request):
+            return .query(request)
+        case .create(let request):
+            return .body(request)
         case .update(_, let name):
             return .body(["name": name])
         }
@@ -76,19 +86,25 @@ struct NetworkTests {
         let name: String
         let email: String
     }
-    
+
     let provider = NetworkProvider()
     
     @Test("GET 요청 테스트")
     func getUserTest() async throws {
-        let user: UserDTO = try await provider.request(UserAPI.user(id: 1))
+        let user: UserDTO = try await provider.request(
+            UserAPI.user(id: 1)
+        )
         print(user)
         #expect(user.id == 1)
     }
     
     @Test("쿼리 파라미터 테스트")
     func queryParameterEncodingTest() async throws {
-        let users: [UserDTO] = try await provider.request(UserAPI.search(name: "Bret"))
+        let users: [UserDTO] = try await provider.request(
+            UserAPI.search(
+                SearchUserQuery(username: "Bret")
+            )
+        )
         print(users)
         
         #expect(users.count > 0)
@@ -97,7 +113,9 @@ struct NetworkTests {
     @Test("POST + Body 요청 테스트")
     func postRequestTest() async throws {
         let newUser: CreateUserResponse = try await provider.request(
-            UserAPI.create(name: "홍길동", email: "hong@example.com")
+            UserAPI.create(
+                CreateUserBody(name: "홍길동", email: "hong@example.com", username: nil)
+            )
         )
         print(newUser)
         #expect(newUser.name == "홍길동")
