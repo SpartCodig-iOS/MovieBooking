@@ -13,8 +13,8 @@ extension WeaveDI.Container {
 
   ///  Repository 등록
   static func registerRepositories() async {
-    let repositories: [ Module] = [
-
+    let repositories: [Module] = [
+      
     ]
 
     await repositories.asyncForEach { module in

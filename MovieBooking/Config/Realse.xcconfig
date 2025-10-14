@@ -9,5 +9,6 @@
 
 OTHER_SWIFT_FLAGS[config=PROD][sdk=*] = $(inherited) -PROD
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD
-BUNDLE_DISPLAY_NAME = 책시리즈
+SUPERBASE_URL=depahiavjicplpqpcbwd.supabase.co
+SUPERBASE_KEY=sb_publishable_DnDwIbBsCHselcdXZrgt7A_OiIO7BAd
 
