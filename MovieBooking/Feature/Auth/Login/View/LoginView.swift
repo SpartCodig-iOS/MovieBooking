@@ -32,9 +32,7 @@ public struct LoginView: View {
     }
     .floatingPopup(
       isPresented: $store.showErrorPopUp,
-      alignment: .top,                // .center / .top 도 가능
-//      tapOutsideToDismiss: true,
-//      backgroundOpacity: 0.3
+      alignment: .top,
     ) {
       SocialLoginErrorPopup()
     }
@@ -82,18 +80,12 @@ extension LoginView {
   @ViewBuilder
   func socialLoginButtonCard() -> some View {
     VStack(spacing: 24) {
-      ZStack {
-        Divider().background(Color.gray.opacity(0.2))
-        Text("소셜 계정으로 로그인")
-          .pretendardFont(family: .medium, size: 16)
-          .foregroundStyle(.gray)
-          .padding(.horizontal, 12)
-          .background(.white)
-      }
-      .padding(.top, 4)
+
+      TitledDivider(title: "소셜 계정으로 로그인")
+      .frame(maxWidth: .infinity, alignment: .center)
 
       VStack(spacing: 12) {
-        ForEach(SocialType.allCases.filter { $0 != .none}) { type in
+        ForEach(SocialType.allCases.filter { $0 != .none }) { type in
           socialLoginButton(type: type) {
 
           }
@@ -101,14 +93,8 @@ extension LoginView {
       }
     }
     .padding(24)
-    .background(
-      RoundedRectangle(cornerRadius: 16)
-        .fill(.white)
-    )
-    .overlay(
-      RoundedRectangle(cornerRadius: 16)
-        .stroke(.gray.opacity(0.1), lineWidth: 1)
-    )
+    .background(RoundedRectangle(cornerRadius: 16).fill(.white))
+    .overlay(RoundedRectangle(cornerRadius: 16).stroke(.gray.opacity(0.1), lineWidth: 1))
     .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
     .padding(.horizontal, 24)
   }
@@ -192,26 +178,31 @@ extension LoginView {
   @ViewBuilder
   func SocialLoginErrorPopup(message: String = "소셜 로그인에 인증에 실패하셨습니다.") -> some View {
     PopupCard {
-      HStack(alignment: .top, spacing: 12) {
-        Image(systemName: "exclamationmark.triangle.fill")
-          .font(.system(size: 18, weight: .semibold))
-          .foregroundColor(.red)
+      VStack(alignment: .leading, spacing: 6) {
+        HStack {
+          Image(systemName: "exclamationmark.triangle.fill")
+            .font(.system(size: 22, weight: .semibold))
+            .foregroundColor(.red)
+            .frame(width: 24, height: 24)
 
-        VStack(alignment: .leading, spacing: 8) {
           Text("로그인 실패")
-            .font(.headline)
+            .pretendardFont(family: .medium, size: 20)
+            .foregroundColor(.black)
 
-          Text(message)
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-
-          Text("잠시 후 다시 시도하거나, 다른 소셜 계정으로 시도해 주세요.")
-            .font(.footnote)
-            .foregroundColor(.secondary)
+          Spacer()
         }
 
-      Spacer()
+        Text(message)
+          .pretendardFont(family: .medium, size: 16)
+          .foregroundColor(.secondary)
+
+        Text("잠시 후 다시 시도하거나, 다른 소셜 계정으로 시도해 주세요.")
+          .pretendardFont(family: .medium, size: 14)
+          .foregroundColor(.secondary)
       }
+      .padding(.vertical, 8)
+      .padding(.horizontal, 4)
+      .frame(maxWidth: .infinity, alignment: .leading)
     }
   }
 }
@@ -224,5 +215,4 @@ extension LoginView {
     )
   )
 }
-
 
