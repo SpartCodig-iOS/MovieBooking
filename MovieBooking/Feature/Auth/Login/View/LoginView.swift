@@ -22,7 +22,7 @@ public struct LoginView: View {
 
       loginLogo
 
-      loginTilte()
+      loginTitle()
 
       Spacer()
     }
@@ -47,20 +47,20 @@ extension LoginView {
       .shadow(color: .basicPurple.opacity(0.3), radius: 16, x: 0, y: 8)
       .overlay(
         Image(systemName: "film.fill")
-          .pretendardFont(family: .medium, size: 48)
+          .font(.pretendardFont(family: .medium, size: 48))
           .foregroundColor(.white)
       )
   }
 
   @ViewBuilder
-  private func loginTilte() -> some View {
+  private func loginTitle() -> some View {
     VStack(spacing: 6) {
       Text("MEGABOX")
-        .pretendardFont(family: .semiBold, size: 32)
+        .font(.pretendardFont(family: .semiBold, size: 32))
         .foregroundColor(.primary)
 
       Text("간편하게 로그인하고 예매를 시작하세요")
-        .pretendardFont(family: .medium, size: 16)
+        .font(.pretendardFont(family: .medium, size: 16))
         .foregroundColor(.secondary)
     }
   }
@@ -72,3 +72,5 @@ extension LoginView {
     Login()
   }))
 }
+
+

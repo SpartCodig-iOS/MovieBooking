@@ -37,7 +37,7 @@ public struct Splash {
   @CasePathable
   public enum View : Equatable{
     case onAppear
-    case startAnimationSequence
+    case startAnimation
 
   }
 
@@ -96,9 +96,9 @@ extension Splash {
   ) -> Effect<Action> {
     switch action {
       case .onAppear:
-        return .send(.view(.startAnimationSequence))
+        return .send(.view(.startAnimation))
 
-      case .startAnimationSequence:
+      case .startAnimation:
         return .run { send in
           await send(.inner(.setPulse(true)))
 

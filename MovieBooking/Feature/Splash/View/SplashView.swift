@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct SplashView: View {
-  @Bindable var store: StoreOf<Splash>
+  @State var store: StoreOf<Splash>
 
   var body: some View {
     ZStack {
@@ -67,7 +67,7 @@ extension SplashView {
         .frame(width: 120, height: 120)
         .overlay(
           Image(systemName: "film.fill")
-            .pretendardFont(family: .medium, size: 48)
+            .font(.pretendardFont(family: .medium, size: 48))
             .foregroundColor(.white)
         )
     }
@@ -77,11 +77,11 @@ extension SplashView {
   fileprivate func titleView() -> some View {
     VStack(spacing: 6) {
       Text("MEGABOX")
-        .pretendardFont(family: .semiBold, size: 32)
+        .font(.pretendardFont(family: .semiBold, size: 32))
         .foregroundColor(.primary)
 
       Text("나만의 영화관, 지금 시작합니다 🎬")
-        .pretendardFont(family: .medium, size: 16)
+        .font(.pretendardFont(family: .medium, size: 16))
         .foregroundColor(.secondary)
     }
   }
