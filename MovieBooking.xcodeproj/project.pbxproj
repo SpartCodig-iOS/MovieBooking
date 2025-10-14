@@ -38,14 +38,14 @@
 		C834FADB2E9DF8F700834FDC /* Exceptions for "MovieBooking" folder in "MovieBookingTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				NetworkService/HTTPMethod.swift,
-				NetworkService/NetworkError.swift,
-				NetworkService/NetworkEventMonitor.swift,
-				NetworkService/NetworkLogger.swift,
-				NetworkService/ParameterEncoding.swift,
-				NetworkService/Provider.swift,
-				NetworkService/TargetType.swift,
-				NetworkService/URLRequestConvertible.swift,
+				NetworkService/Core/HTTPMethod.swift,
+				NetworkService/Core/ParameterEncoding.swift,
+				NetworkService/Core/TargetType.swift,
+				NetworkService/Core/URLRequestConvertible.swift,
+				NetworkService/Error/NetworkError.swift,
+				NetworkService/Monitoring/NetworkEventMonitor.swift,
+				NetworkService/Monitoring/NetworkLogger.swift,
+				NetworkService/Provider/Provider.swift,
 			);
 			target = F24B8FF62E9D0D2B00EF7944 /* MovieBookingTests */;
 		};
