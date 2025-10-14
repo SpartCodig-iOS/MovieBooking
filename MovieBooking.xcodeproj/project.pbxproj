@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F6F8B432E9D27850046FA0E /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 7F6F8B422E9D27850046FA0E /* Auth */; };
+		7F6F8B452E9D27850046FA0E /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 7F6F8B442E9D27850046FA0E /* Supabase */; };
+		7F6F8B482E9D279B0046FA0E /* WeaveDI in Frameworks */ = {isa = PBXBuildFile; productRef = 7F6F8B472E9D279B0046FA0E /* WeaveDI */; };
 		F24B91D52E9D1A5800EF7944 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = F24B91D42E9D1A5800EF7944 /* ComposableArchitecture */; };
 		F24B91D82E9D1A8B00EF7944 /* TCACoordinators in Frameworks */ = {isa = PBXBuildFile; productRef = F24B91D72E9D1A8B00EF7944 /* TCACoordinators */; };
 /* End PBXBuildFile section */
@@ -34,9 +37,22 @@
 		F24B90012E9D0D2C00EF7944 /* MovieBookingUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieBookingUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7F6F8C092E9DCCD60046FA0E /* Exceptions for "MovieBooking" folder in "MovieBooking" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/Info.plist,
+			);
+			target = F24B8FE92E9D0D2900EF7944 /* MovieBooking */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F24B8FEC2E9D0D2900EF7944 /* MovieBooking */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7F6F8C092E9DCCD60046FA0E /* Exceptions for "MovieBooking" folder in "MovieBooking" target */,
+			);
 			path = MovieBooking;
 			sourceTree = "<group>";
 		};
@@ -57,8 +73,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F6F8B452E9D27850046FA0E /* Supabase in Frameworks */,
+				7F6F8B482E9D279B0046FA0E /* WeaveDI in Frameworks */,
 				F24B91D82E9D1A8B00EF7944 /* TCACoordinators in Frameworks */,
 				F24B91D52E9D1A5800EF7944 /* ComposableArchitecture in Frameworks */,
+				7F6F8B432E9D27850046FA0E /* Auth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +140,9 @@
 			packageProductDependencies = (
 				F24B91D42E9D1A5800EF7944 /* ComposableArchitecture */,
 				F24B91D72E9D1A8B00EF7944 /* TCACoordinators */,
+				7F6F8B422E9D27850046FA0E /* Auth */,
+				7F6F8B442E9D27850046FA0E /* Supabase */,
+				7F6F8B472E9D279B0046FA0E /* WeaveDI */,
 			);
 			productName = MovieBooking;
 			productReference = F24B8FEA2E9D0D2900EF7944 /* MovieBooking.app */;
@@ -207,6 +229,8 @@
 			packageReferences = (
 				F24B91D32E9D1A5800EF7944 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				F24B91D62E9D1A8B00EF7944 /* XCRemoteSwiftPackageReference "TCACoordinators" */,
+				7F6F8B412E9D27850046FA0E /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				7F6F8B462E9D279B0046FA0E /* XCRemoteSwiftPackageReference "WeaveDI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F24B8FEB2E9D0D2900EF7944 /* Products */;
@@ -284,6 +308,8 @@
 /* Begin XCBuildConfiguration section */
 		F24B90092E9D0D2C00EF7944 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Dev.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -348,6 +374,8 @@
 		};
 		F24B900A2E9D0D2C00EF7944 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Realse.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -405,14 +433,18 @@
 		};
 		F24B900C2E9D0D2C00EF7944 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Dev.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MovieBooking/Resources/MovieBooking.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = URUB4S4795;
+				DEVELOPMENT_TEAM = N94CS4N6VR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MovieBooking/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -437,14 +469,18 @@
 		};
 		F24B900D2E9D0D2C00EF7944 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Realse.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MovieBooking/Resources/MovieBooking.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = URUB4S4795;
+				DEVELOPMENT_TEAM = N94CS4N6VR;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MovieBooking/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -469,6 +505,8 @@
 		};
 		F24B900F2E9D0D2C00EF7944 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Dev.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -491,6 +529,8 @@
 		};
 		F24B90102E9D0D2C00EF7944 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Realse.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -513,6 +553,8 @@
 		};
 		F24B90122E9D0D2C00EF7944 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Dev.xcconfig;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -533,6 +575,8 @@
 		};
 		F24B90132E9D0D2C00EF7944 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F24B8FEC2E9D0D2900EF7944 /* MovieBooking */;
+			baseConfigurationReferenceRelativePath = Config/Realse.xcconfig;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -593,6 +637,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		7F6F8B412E9D27850046FA0E /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+		7F6F8B462E9D279B0046FA0E /* XCRemoteSwiftPackageReference "WeaveDI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Roy-wonji/WeaveDI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.3.1;
+			};
+		};
 		F24B91D32E9D1A5800EF7944 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -612,6 +672,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		7F6F8B422E9D27850046FA0E /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F6F8B412E9D27850046FA0E /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		7F6F8B442E9D27850046FA0E /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F6F8B412E9D27850046FA0E /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		7F6F8B472E9D279B0046FA0E /* WeaveDI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F6F8B462E9D279B0046FA0E /* XCRemoteSwiftPackageReference "WeaveDI" */;
+			productName = WeaveDI;
+		};
 		F24B91D42E9D1A5800EF7944 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F24B91D32E9D1A5800EF7944 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
