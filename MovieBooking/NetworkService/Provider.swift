@@ -39,12 +39,20 @@ class NetworkProvider {
             })
         }
         
-        guard let url = components.url else { // 쿼리가 있다면 components.url에서 query가 들어간 url이 나옴 
+        guard let url = components.url else { // 쿼리가 있다면 components.url에서 query가 들어간 url이 나옴
             throw NetworkError.invalidURL
         }
         
         var request = URLRequest(url: url)
         request.httpMethod = target.method.rawValue
+        
+        if case .body(let params) = target.parameters {
+            do {
+                request.httpBody = try JSONSerialization.data(withJSONObject: params)
+            } catch {
+                throw NetworkError.encodingError(error)
+            }
+        }
         
         target.headers?.forEach { (key, value) in
             request.setValue(value, forHTTPHeaderField: key)
