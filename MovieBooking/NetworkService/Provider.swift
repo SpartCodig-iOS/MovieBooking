@@ -14,55 +14,13 @@ class NetworkProvider {
         self.session = session
     }
     
-    func request<T: Decodable>(_ target: TargetType) async throws -> T {
+    func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) async throws -> T {
         // 1. URLRequest 만들기
-        let request = try buildRequest(from: target)
+        let request = try urlConvertible.asURLRequest()
         // 2. 네트워크 요청 실행
         let data = try await performRequest(request)
         // 3. JSON 파싱
         return try decode(data)
-    }
-    
-    private func buildRequest(
-        from target: TargetType
-    ) throws -> URLRequest {
-        let urlString = target.baseURL + target.path
-        // 1. URL 기본 생성
-        guard var components = URLComponents(string: urlString) else {
-            throw NetworkError.invalidURL
-        }
-        
-        // 2. 쿼리 파라미터 처리
-        if case .query(let encodable) = target.parameters {
-            do {
-                let queryDict = try encodable.toDictionary()
-                components.queryItems = queryDict.map { URLQueryItem(name: $0.key, value: $0.value) }
-            } catch {
-                throw NetworkError.encodingError(error)
-            }
-        }
-        
-        guard let url = components.url else { // 쿼리가 있다면 components.url에서 query가 들어간 url이 나옴
-            throw NetworkError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = target.method.rawValue
-        
-        if case .body(let encodable) = target.parameters {
-            do {
-                let encoder = JSONEncoder()
-                request.httpBody = try encoder.encode(encodable)
-            } catch {
-                throw NetworkError.encodingError(error)
-            }
-        }
-        
-        target.headers?.forEach { (key, value) in
-            request.setValue(value, forHTTPHeaderField: key)
-        }
-        
-        return request
     }
     
     private func performRequest(

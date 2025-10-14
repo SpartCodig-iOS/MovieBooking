@@ -43,6 +43,7 @@
 				NetworkService/ParameterEncoding.swift,
 				NetworkService/Provider.swift,
 				NetworkService/TargetType.swift,
+				NetworkService/URLRequestConvertible.swift,
 			);
 			target = F24B8FF62E9D0D2B00EF7944 /* MovieBookingTests */;
 		};
