@@ -10,11 +10,21 @@ import ComposableArchitecture
 
 @main
 struct MovieBookingApp: App {
+  @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+  init() {
+
+  }
+
     var body: some Scene {
         WindowGroup {
-          SplashScreenView(store: Store(initialState: Splash.State(), reducer: {
-            Splash()
-          }))
+          let store = Store(initialState: AppReducer.State()) {
+            AppReducer()
+              ._printChanges()
+              ._printChanges(.actionLabels)
+          }
+
+          AppView(store: store)
         }
     }
 }

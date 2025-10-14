@@ -10,7 +10,7 @@ import WeaveDI
 extension AppWeaveDI.Container {
   @DIContainerActor
   func registerDefaultDependencies() async {
-    await registerDependencies(logLevel: .all) { container in
+    await registerDependencies(logLevel: .errors) { container in
       // Repository 먼저 등록
       let factory = ModuleFactoryManager()
 
