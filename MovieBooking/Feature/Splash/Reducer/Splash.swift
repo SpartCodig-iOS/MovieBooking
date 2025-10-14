@@ -16,7 +16,8 @@ public struct Splash {
   public init() {}
 
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Equatable, Hashable {
+    public let id = UUID()
     var fadeOut: Bool = false
     var pulse: Bool = false
     public init() {}
@@ -57,8 +58,8 @@ public struct Splash {
   //MARK: - NavigationAction
   @CasePathable
   public enum NavigationAction: Equatable {
-    case presentLoginView
-    case presentMainView
+    case presentLogin
+    case presentMain
 
 
   }
@@ -101,11 +102,11 @@ extension Splash {
         return .run { send in
           await send(.inner(.setPulse(true)))
 
-          try await clock.sleep(for: .seconds(1.5))
+          try await clock.sleep(for: .seconds(1.3))
           await send(.inner(.setFadeOut(true)))
-//
-//          try await clock.sleep(for: .seconds(0.4))
-//          await send(.navigation(.presentLoginView))
+
+
+          await send(.navigation(.presentLogin))
         }
     }
   }
@@ -125,11 +126,11 @@ extension Splash {
   ) -> Effect<Action> {
     switch action {
         // 로그인 안했을경우
-      case .presentLoginView:
+      case .presentLogin:
         return .none
 
         // 로그인 했을경우
-      case .presentMainView:
+      case .presentMain:
         return .none
     }
   }

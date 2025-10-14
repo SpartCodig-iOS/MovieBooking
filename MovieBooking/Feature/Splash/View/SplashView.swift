@@ -1,5 +1,5 @@
 //
-//  SplashScreenView.swift
+//  SplashView.swift
 //  MovieBooking
 //
 //  Created by Wonji Suh  on 10/14/25.
@@ -8,7 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-struct SplashScreenView: View {
+struct SplashView: View {
   @Bindable var store: StoreOf<Splash>
 
   var body: some View {
@@ -17,7 +17,7 @@ struct SplashScreenView: View {
         gradient: Gradient(colors: [
           .white,
           .white,
-          .deepViolet.opacity(0.05)
+          .megaboxPrimary.opacity(0.05)
         ]),
         startPoint: .top,
         endPoint: .bottom
@@ -32,7 +32,7 @@ struct SplashScreenView: View {
       }
       .scaleEffect(store.fadeOut ? 0.95 : 1.0)
       .opacity(store.fadeOut ? 0.0 : 1.0)
-      .animation(.easeInOut(duration: 0.5), value: store.fadeOut)
+      .animation(.easeInOut(duration: 1), value: store.fadeOut)
       .onAppear {
         store.send(.view(.onAppear))
       }
@@ -42,13 +42,13 @@ struct SplashScreenView: View {
 }
 
 
-extension SplashScreenView {
+extension SplashView {
 
   @ViewBuilder
   fileprivate func splashLogo() -> some View {
     ZStack {
       Circle()
-        .fill(.deepViolet.opacity(0.20))
+        .fill(.megaboxPrimary.opacity(0.20))
         .blur(radius: 24)
         .scaleEffect(store.pulse ? 1.08 : 0.95)
         .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: store.pulse)
@@ -57,7 +57,7 @@ extension SplashScreenView {
         .fill(
           LinearGradient(
             colors: [
-              .deepViolet,
+              .megaboxPrimary,
               Color.purple
             ],
             startPoint: .topLeading,
@@ -90,7 +90,7 @@ extension SplashScreenView {
 
 
 #Preview {
-  SplashScreenView(store: .init(initialState: Splash.State(), reducer: {
+  SplashView(store: .init(initialState: Splash.State(), reducer: {
     Splash()
   }))
 }
