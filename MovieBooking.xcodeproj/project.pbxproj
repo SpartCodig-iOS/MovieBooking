@@ -34,9 +34,26 @@
 		F24B90012E9D0D2C00EF7944 /* MovieBookingUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieBookingUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C834FADB2E9DF8F700834FDC /* Exceptions for "MovieBooking" folder in "MovieBookingTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				NetworkService/HTTPMethod.swift,
+				NetworkService/NetworkError.swift,
+				NetworkService/ParameterEncoding.swift,
+				NetworkService/Provider.swift,
+				NetworkService/TargetType.swift,
+			);
+			target = F24B8FF62E9D0D2B00EF7944 /* MovieBookingTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F24B8FEC2E9D0D2900EF7944 /* MovieBooking */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C834FADB2E9DF8F700834FDC /* Exceptions for "MovieBooking" folder in "MovieBookingTests" target */,
+			);
 			path = MovieBooking;
 			sourceTree = "<group>";
 		};

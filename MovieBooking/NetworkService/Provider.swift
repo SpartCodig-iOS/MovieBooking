@@ -27,7 +27,19 @@ class NetworkProvider {
         from target: TargetType
     ) throws -> URLRequest {
         let urlString = target.baseURL + target.path
-        guard let url = URL(string: urlString) else {
+        // 1. URL 기본 생성
+        guard var components = URLComponents(string: urlString) else {
+            throw NetworkError.invalidURL
+        }
+        
+        // 2. 쿼리 파라미터 처리
+        if case .query(let params) = target.parameters {
+            components.queryItems = params.map({ key, value in
+                URLQueryItem(name: key, value: "\(value)")
+            })
+        }
+        
+        guard let url = components.url else { // 쿼리가 있다면 components.url에서 query가 들어간 url이 나옴 
             throw NetworkError.invalidURL
         }
         
@@ -70,7 +82,7 @@ class NetworkProvider {
             let decoder = JSONDecoder()
             return try decoder.decode(T.self, from: data)
         } catch {
-            throw NetworkError.decodingError
+            throw NetworkError.decodingError(error)
         }
     }
 }
