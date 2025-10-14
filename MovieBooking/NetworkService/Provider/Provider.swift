@@ -104,9 +104,9 @@ class NetworkProvider {
             var response: HTTPURLResponse?
             var responseData: Data?
             
-            if case .httpError(_, let res, let dat) = networkError {
+            if case .httpError(_, let res, let data) = networkError {
                 response = res
-                responseData = dat
+                responseData = data
             }
             
             eventMonitors.forEach { monitor in

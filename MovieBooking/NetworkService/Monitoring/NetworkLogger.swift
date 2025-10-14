@@ -136,7 +136,7 @@ actor NetworkLogger {
         
         if let networkError = error as? NetworkError {
             switch networkError {
-            case .httpError(let statusCode):
+            case .httpError(let statusCode, _, _):
                 log += "StatusCode: \(statusCode)\n"
             case .decodingError(let err):
                 log += "Decoding Error: \(err.localizedDescription)\n"
