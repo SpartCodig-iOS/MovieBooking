@@ -5,9 +5,14 @@
 //  Created by Wonji Suh  on 10/14/25.
 //
 
-
 import Foundation
+
+import AuthenticationServices
+
 import ComposableArchitecture
+import WeaveDI
+import LogMacro
+
 
 
 @Reducer
@@ -15,11 +20,22 @@ public struct Login {
   public init() {}
 
   @ObservableState
-  public struct State: Equatable, Hashable {
-    public init() {}
+  public struct State: Equatable {
+    var socialType: SocialType? = nil
+    var currentNonce: String? = nil
+    var authError: String? = nil
+    var showErrorPopUp: Bool = false
+
+    @Shared var userEntity: UserEntity
+
+    public init(
+      userEntity: UserEntity = .init()
+    ) {
+      self._userEntity = Shared(wrappedValue: userEntity, .inMemory("UserEntity"))
+    }
   }
 
-  public enum Action: ViewAction, BindableAction, Equatable {
+  public enum Action: ViewAction, BindableAction {
     case binding(BindingAction<State>)
     case view(View)
     case async(AsyncAction)
@@ -31,18 +47,22 @@ public struct Login {
   //MARK: - ViewAction
   @CasePathable
   public enum View: Equatable {
-
+    case closePopUp(Bool)
   }
 
 
 
   //MARK: - AsyncAction 비동기 처리 액션
-  public enum AsyncAction: Equatable {
+  public enum AsyncAction {
+    case prepareAppleRequest(ASAuthorizationAppleIDRequest)
+    case appleCompletion(Result<ASAuthorization, Error>)
 
   }
-
   //MARK: - 앱내에서 사용하는 액션
   public enum InnerAction: Equatable {
+    case setUser(UserEntity)
+    case setAuthError(String)
+    case setNonce(String?)
   }
 
   //MARK: - NavigationAction
@@ -51,6 +71,9 @@ public struct Login {
 
   }
 
+
+  @Injected(AuthUseCaseImpl.self) var authUseCase
+  @Dependency(\.continuousClock) var clock
 
   public var body: some Reducer<State, Action> {
     BindingReducer()
@@ -81,7 +104,9 @@ extension Login {
     action: View
   ) -> Effect<Action> {
     switch action {
-
+      case .closePopUp(let showErrorPopUp):
+        state.showErrorPopUp = showErrorPopUp
+        return .none
     }
   }
 
@@ -90,7 +115,30 @@ extension Login {
     action: AsyncAction
   ) -> Effect<Action> {
     switch action {
+      case .prepareAppleRequest(let request):
+        let nonce = AppleLoginManger.shared.prepare(request)
+        state.currentNonce = nonce
+        return .none
 
+      case .appleCompletion(let result):
+        return .run { [nonce = state.currentNonce] send in
+          do {
+            guard
+              case .success(let auth) = result,
+              let credential = auth.credential as? ASAuthorizationAppleIDCredential,
+              let nonce, !nonce.isEmpty
+            else {
+              await send(.inner(.setAuthError("Apple 자격정보/nonce 누락")))
+              return
+            }
+
+            let user = try await authUseCase.signInWithAppleOnce(credential: credential, nonce: nonce)
+            await send(.inner(.setUser(user)))
+
+          } catch {
+            await send(.inner(.setAuthError(error.localizedDescription)))
+          }
+        }
     }
   }
 
@@ -108,8 +156,42 @@ extension Login {
     action: InnerAction
   ) -> Effect<Action> {
     switch action {
+      case .setAuthError(let error):
+        state.authError = DomainError.authenticationFailed.errorDescription
+        state.showErrorPopUp = true
+        return .run { send in
+          try await clock.sleep(for: .seconds(2.5))
+          await send(.view(.closePopUp(false)))
+        }
 
+      case .setUser(let userEnity):
+        state.$userEntity.withLock { $0 = userEnity}
+        #logDebug("로그인 성공", state.userEntity)
+        return .none
+
+      case .setNonce(let nonce):
+        state.currentNonce = nonce
+        return .none
     }
   }
 }
 
+
+
+// MARK: - Hashable for Login.State (explicit, uses wrapped values)
+extension Login.State: Hashable {
+  public static func == (lhs: Login.State, rhs: Login.State) -> Bool {
+    lhs.socialType == rhs.socialType &&
+    lhs.currentNonce == rhs.currentNonce &&
+    lhs.userEntity == rhs.userEntity &&
+    lhs.authError == rhs.authError &&
+    lhs.showErrorPopUp == rhs.showErrorPopUp
+  }
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(socialType)
+    hasher.combine(currentNonce)
+    hasher.combine(userEntity)
+    hasher.combine(authError)
+    hasher.combine(showErrorPopUp)
+  }
+}
