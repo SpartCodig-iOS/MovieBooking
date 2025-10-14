@@ -13,7 +13,6 @@ struct SplashScreenView: View {
 
   var body: some View {
     ZStack {
-      // 배경 그라데이션 (상단 화이트, 하단 아주 옅은 보라)
       LinearGradient(
         gradient: Gradient(colors: [
           .white,
