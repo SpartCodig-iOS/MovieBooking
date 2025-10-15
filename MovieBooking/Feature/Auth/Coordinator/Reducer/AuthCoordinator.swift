@@ -18,14 +18,14 @@ public struct AuthCoordinator {
     var routes: [Route<AuthScreen.State>]
 
     public init() {
-      self.routes = [.root(.login(.init()), embedInNavigationView: true)]
+      @Shared(.inMemory("UserEntity")) var userEntity: UserEntity = .init()
+      self.routes = [.root(.login(.init(userEntity: userEntity)), embedInNavigationView: true)]
     }
   }
 
-  public enum Action: BindableAction {
+  public enum Action:  BindableAction {
     case binding(BindingAction<State>)
     case router(IndexedRouterActionOf<AuthScreen>)
-
   }
 
 
@@ -38,7 +38,6 @@ public struct AuthCoordinator {
 
         case .router(let routeAction):
           return routerAction(state: &state, action: routeAction)
-
       }
     }
     .forEachRoute(\.routes, action: \.router)
@@ -61,6 +60,6 @@ extension AuthCoordinator {
 extension AuthCoordinator {
   @Reducer(state: .equatable, .hashable)
   public enum AuthScreen {
-    case login(Login)
+    case login(LoginReducer)
   }
 }
