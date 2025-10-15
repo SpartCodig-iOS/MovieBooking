@@ -1,0 +1,14 @@
+//
+//  Shared.xcconfig
+//  GoGo
+//
+//  Created by ha sungyong on 10/29/24.
+//
+
+#include "./Shared.xcconfig"
+
+OTHER_SWIFT_FLAGS[config=PROD][sdk=*] = $(inherited) -PROD
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD
+SUPERBASE_URL=depahiavjicplpqpcbwd.supabase.co
+SUPERBASE_KEY=sb_publishable_DnDwIbBsCHselcdXZrgt7A_OiIO7BAd
+

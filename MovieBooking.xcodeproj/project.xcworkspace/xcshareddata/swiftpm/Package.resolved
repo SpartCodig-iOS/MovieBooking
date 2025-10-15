@@ -1,5 +1,5 @@
 {
-  "originHash" : "0c1eca297b548e9ec69bfb69a1bc5aa2267a470775adc7e482e6d899e20ee3cd",
+  "originHash" : "561b1586e0fb6f910745bf5bfd05cfc1cf6da60209bfc8223e7d3958750b34c4",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -17,6 +17,33 @@
       "state" : {
         "revision" : "a2b974b81612e1e8ee3ecd757d936a2919527356",
         "version" : "0.4.1"
+      }
+    },
+    {
+      "identity" : "logmacro",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Roy-wonji/LogMacro.git",
+      "state" : {
+        "revision" : "593b210346cf7145074c2d94fa4206bbc70198e0",
+        "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "supabase-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/supabase/supabase-swift.git",
+      "state" : {
+        "revision" : "21425be5a493bb24bfde51808ccfa82a56111430",
+        "version" : "2.34.0"
+      }
+    },
+    {
+      "identity" : "swift-asn1",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-asn1.git",
+      "state" : {
+        "revision" : "f70225981241859eb4aa1a18a75531d26637c8cc",
+        "version" : "1.4.0"
       }
     },
     {
@@ -65,6 +92,15 @@
       }
     },
     {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "revision" : "95ba0316a9b733e92bb6b071255ff46263bbe7dc",
+        "version" : "3.15.1"
+      }
+    },
+    {
       "identity" : "swift-custom-dump",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-custom-dump",
@@ -76,10 +112,19 @@
     {
       "identity" : "swift-dependencies",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-dependencies",
+      "location" : "https://github.com/pointfreeco/swift-dependencies.git",
       "state" : {
         "revision" : "a10f9feeb214bc72b5337b6ef6d5a029360db4cc",
         "version" : "1.10.0"
+      }
+    },
+    {
+      "identity" : "swift-http-types",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-http-types.git",
+      "state" : {
+        "revision" : "a0a57e949a8903563aba4615869310c0ebf14c03",
+        "version" : "1.4.0"
       }
     },
     {
@@ -121,10 +166,10 @@
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-syntax",
+      "location" : "https://github.com/apple/swift-syntax.git",
       "state" : {
-        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
-        "version" : "602.0.0"
+        "revision" : "0687f71944021d616d34d922343dcef086855920",
+        "version" : "600.0.1"
       }
     },
     {
@@ -134,6 +179,15 @@
       "state" : {
         "revision" : "3643b91c91fc5d8379eb6d3b5600574f8e320e9b",
         "version" : "0.13.0"
+      }
+    },
+    {
+      "identity" : "weavedi",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Roy-wonji/WeaveDI",
+      "state" : {
+        "revision" : "89728f122d41633d8ebac182fc15040065e2492c",
+        "version" : "3.3.1"
       }
     },
     {
