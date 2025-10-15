@@ -10,14 +10,15 @@ import SwiftUI
 struct MovieTypeSectionView: View {
   let cardCount: Int
   let headerText: String
+  let movies: [Movie]
 
   var body: some View {
     VStack(spacing: 10) {
       HeaderView(headerText: headerText)
       ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 15) {
-          ForEach(0..<cardCount, id: \.self) { _ in
-            MovieCardView()
+          ForEach(movies) { movie in
+            MovieCardView(movieTitle: movie.title, movieRating: Int(movie.voteAverage))
           }
         }
       }
@@ -47,6 +48,6 @@ struct HeaderView: View {
   }
 }
 
-#Preview {
-  MovieTypeSectionView(cardCount: 5, headerText: "Now Showing")
-}
+//#Preview {
+//  MovieTypeSectionView(cardCount: 5, headerText: "Now Showing", movie: <#[Movie]#>)
+//}

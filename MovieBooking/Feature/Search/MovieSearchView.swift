@@ -14,7 +14,7 @@ struct MovieSearchView: View {
     VStack(spacing: 20) {
       SearchBar(text: $searchText)
 
-      SearchView()
+      SearchView(movies: Movie.mockData)
     }
     .padding(.horizontal, 20)
   }
