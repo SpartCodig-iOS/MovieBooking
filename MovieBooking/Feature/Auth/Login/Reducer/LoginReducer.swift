@@ -1,5 +1,5 @@
 //
-//  Login.swift
+//  LoginReducer.swift
 //  MovieBooking
 //
 //  Created by Wonji Suh  on 10/14/25.
@@ -14,9 +14,8 @@ import WeaveDI
 import LogMacro
 
 
-
 @Reducer
-public struct Login {
+public struct LoginReducer {
   public init() {}
 
   @ObservableState
@@ -56,6 +55,7 @@ public struct Login {
   public enum AsyncAction {
     case prepareAppleRequest(ASAuthorizationAppleIDRequest)
     case appleCompletion(Result<ASAuthorization, Error>)
+    case signInWithSocial(social: SocialType)
 
   }
   //MARK: - 앱내에서 사용하는 액션
@@ -72,8 +72,14 @@ public struct Login {
   }
 
 
+  nonisolated(unsafe) enum LoginCancelID: Hashable, Sendable {
+    case apple
+    case social
+  }
+
   @Injected(AuthUseCaseImpl.self) var authUseCase
   @Dependency(\.continuousClock) var clock
+  @Dependency(\.mainQueue) var mainQueue
 
   public var body: some Reducer<State, Action> {
     BindingReducer()
@@ -98,7 +104,7 @@ public struct Login {
   }
 }
 
-extension Login {
+extension LoginReducer {
   private func handleViewAction(
     state: inout State,
     action: View
@@ -139,6 +145,23 @@ extension Login {
             await send(.inner(.setAuthError(error.localizedDescription)))
           }
         }
+        .debounce(id: LoginCancelID.apple, for: 0.1, scheduler: mainQueue)
+
+      case .signInWithSocial(let social):
+        return .run { send in
+          let socialResult = await Result {
+            try await authUseCase.signInWithSocial(type: social)
+          }
+
+          switch socialResult {
+            case .success(let socialData):
+              await send(.inner(.setUser(socialData)))
+
+            case .failure(let error):
+              await send(.inner(.setAuthError(error.localizedDescription)))
+          }
+      }
+        .debounce(id: LoginCancelID.social, for: 0.1, scheduler: mainQueue)
     }
   }
 
@@ -156,13 +179,10 @@ extension Login {
     action: InnerAction
   ) -> Effect<Action> {
     switch action {
-      case .setAuthError(let error):
+      case .setAuthError( _):
         state.authError = DomainError.authenticationFailed.errorDescription
         state.showErrorPopUp = true
-        return .run { send in
-          try await clock.sleep(for: .seconds(2.5))
-          await send(.view(.closePopUp(false)))
-        }
+        return .none
 
       case .setUser(let userEnity):
         state.$userEntity.withLock { $0 = userEnity}
@@ -179,8 +199,8 @@ extension Login {
 
 
 // MARK: - Hashable for Login.State (explicit, uses wrapped values)
-extension Login.State: Hashable {
-  public static func == (lhs: Login.State, rhs: Login.State) -> Bool {
+extension LoginReducer.State: Hashable {
+  public static func == (lhs: LoginReducer.State, rhs: LoginReducer.State) -> Bool {
     lhs.socialType == rhs.socialType &&
     lhs.currentNonce == rhs.currentNonce &&
     lhs.userEntity == rhs.userEntity &&

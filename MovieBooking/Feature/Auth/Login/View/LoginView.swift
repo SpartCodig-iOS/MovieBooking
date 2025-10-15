@@ -5,16 +5,19 @@
 //  Created by Wonji Suh  on 10/14/25.
 //
 
-import ComposableArchitecture
-import Supabase
 import SwiftUI
+
 import AuthenticationServices
 
+import ComposableArchitecture
+import Supabase
+
+
 public struct LoginView: View {
-  @Bindable var store: StoreOf<Login>
+  @Bindable var store: StoreOf<LoginReducer>
   private let repo = AuthRepositoryImpl()
 
-  init(store: StoreOf<Login>) {
+  init(store: StoreOf<LoginReducer>) {
     self.store = store
   }
 
@@ -36,7 +39,19 @@ public struct LoginView: View {
     ) {
       SocialLoginErrorPopup()
     }
-
+    .task {
+      Task.detached {
+          do {
+              let session = try await SuperBaseManger.shared.client.auth.session
+              let user = session.user
+              let lastProvider = user.appMetadata["provider"]?.stringValue ?? "unknown"
+              let lastSignedInAt = user.lastSignInAt
+              print(lastProvider, lastSignedInAt as Any)
+          } catch {
+              print("세션 불러오기 실패:", error)
+          }
+      }
+    }
   }
 }
 
@@ -87,7 +102,9 @@ extension LoginView {
       VStack(spacing: 12) {
         ForEach(SocialType.allCases.filter { $0 != .none }) { type in
           socialLoginButton(type: type) {
-
+            Task {
+              store.send(.async(.signInWithSocial(social: type)))
+            }
           }
         }
       }
@@ -178,30 +195,36 @@ extension LoginView {
   @ViewBuilder
   func SocialLoginErrorPopup(message: String = "소셜 로그인에 인증에 실패하셨습니다.") -> some View {
     PopupCard {
-      VStack(alignment: .leading, spacing: 6) {
-        HStack {
+      VStack(alignment: .leading, spacing: 10) {
+        HStack(spacing: 8) {
           Image(systemName: "exclamationmark.triangle.fill")
-            .font(.system(size: 22, weight: .semibold))
+            .font(.pretendardFont(family: .semiBold, size: 22))
             .foregroundColor(.red)
             .frame(width: 24, height: 24)
 
           Text("로그인 실패")
-            .pretendardFont(family: .medium, size: 20)
+            .font(.pretendardFont(family: .semiBold, size: 18))
             .foregroundColor(.black)
-
           Spacer()
         }
 
-        Text(message)
-          .pretendardFont(family: .medium, size: 16)
-          .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 6) {
+          Text(message)
+            .font(.pretendardFont(family: .medium, size: 16))
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: false, vertical: true)
 
-        Text("잠시 후 다시 시도하거나, 다른 소셜 계정으로 시도해 주세요.")
-          .pretendardFont(family: .medium, size: 14)
-          .foregroundColor(.secondary)
+          Text(store.authError ?? "")
+            .font(.pretendardFont(family: .medium, size: 14))
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.leading)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
-      .padding(.vertical, 8)
-      .padding(.horizontal, 4)
+      .padding(.vertical, 10)
+      .padding(.horizontal, 16)
       .frame(maxWidth: .infinity, alignment: .leading)
     }
   }
@@ -209,8 +232,8 @@ extension LoginView {
 
 #Preview {
   LoginView(
-    store: .init( initialState: Login.State(), reducer: {
-        Login()
+    store: .init( initialState: LoginReducer.State(), reducer: {
+      LoginReducer()
       }
     )
   )
