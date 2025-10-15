@@ -23,7 +23,7 @@ struct SearchView: View {
       ScrollView {
         LazyVGrid(columns: columns, spacing: 20) {
           ForEach(movies) { movie in
-            MovieCardView(movieTitle: movie.title, movieRating: Int(movie.voteAverage))
+            MovieCardView(movieTitle: movie.title, movieRating: Int(movie.voteAverage / 2), posterPath: movie.posterPath)
           }
         }
       }

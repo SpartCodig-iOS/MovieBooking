@@ -14,16 +14,19 @@ struct MovieListView: View {
   var body: some View {
     ScrollView(showsIndicators: false) {
       VStack(spacing: 20) {
-        MovieTypeSectionView(cardCount: 5, headerText: "Now Showing", movies: store.movies)
-        MovieTypeSectionView(cardCount: 4, headerText: "Coming Soon", movies: store.movies)
-        MovieTypeSectionView(cardCount: 3, headerText: "전체 영화", movies: store.movies)
+        MovieTypeSectionView(cardCount: 5, headerText: "Now Showing", movies: store.nowPlayingMovies)
+        MovieTypeSectionView(cardCount: 4, headerText: "Coming Soon", movies: store.upcomingMovies)
+        MovieTypeSectionView(cardCount: 3, headerText: "인기 영화", movies: store.popularMovies)
       }
+    }
+    .task {
+      await store.send(.onAppear).finish()
     }
   }
 }
 
-#Preview {
-  MovieListView(store: Store(initialState: MovieListFeature.State(movies: Movie.mockData)) {
-    MovieListFeature()
-  })
-}
+//#Preview {
+//  MovieListView(store: Store(initialState: MovieListFeature.State(movies: Movie.mockData)) {
+//    MovieListFeature()
+//  })
+//}

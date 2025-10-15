@@ -18,7 +18,7 @@ struct MovieTypeSectionView: View {
       ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 15) {
           ForEach(movies) { movie in
-            MovieCardView(movieTitle: movie.title, movieRating: Int(movie.voteAverage))
+            MovieCardView(movieTitle: movie.title, movieRating: Int(movie.voteAverage / 2), posterPath: movie.posterPath)
           }
         }
       }

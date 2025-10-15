@@ -9,7 +9,9 @@ import Foundation
 import Dependencies
 
 protocol MovieRepositoryProtocol {
-  func fetchMovies() async throws -> [Movie]
+  func fetchNowPlayingMovies() async throws -> [Movie]
+  func fetchUpcomingMovies() async throws -> [Movie]
+  func fetchPopularMovies() async throws -> [Movie]
 }
 
 private enum MovieRepositoryKey: DependencyKey {

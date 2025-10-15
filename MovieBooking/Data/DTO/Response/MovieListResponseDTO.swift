@@ -28,3 +28,16 @@ struct DatesDTO: Decodable {
   let maximum: String
   let minimum: String
 }
+
+extension MovieDTO {
+  func toDomain() -> Movie {
+    Movie(
+      id: id,
+      title: title,
+      overview: overview,
+      posterPath: posterPath ?? "",
+      releaseDate: releaseDate,
+      voteAverage: voteAverage
+    )
+  }
+}
