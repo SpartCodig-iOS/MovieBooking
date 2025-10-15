@@ -10,7 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 public struct LoginView: View {
-  @Bindable var store: StoreOf<Login>
+  @Perception.Bindable var store: StoreOf<Login>
 
   init(store: StoreOf<Login>) {
     self.store = store

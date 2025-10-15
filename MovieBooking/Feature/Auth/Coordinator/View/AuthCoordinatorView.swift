@@ -11,7 +11,7 @@ import ComposableArchitecture
 import TCACoordinators
 
 public struct AuthCoordinatorView: View {
-  @Bindable private var store: StoreOf<AuthCoordinator>
+  @Perception.Bindable private var store: StoreOf<AuthCoordinator>
 
   public init(
     store: StoreOf<AuthCoordinator>
