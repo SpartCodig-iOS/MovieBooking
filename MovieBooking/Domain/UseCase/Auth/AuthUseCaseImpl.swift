@@ -47,6 +47,10 @@ public struct AuthUseCaseImpl: AuthInterface {
   ) async throws -> UserEntity {
     return try await repository.signInWithAppleOnce(credential: credential, nonce: nonce)
   }
+
+  public func signInWithSocial(type: SocialType) async throws -> UserEntity {
+    return try await repository.signInWithSocial(type: type)
+  }
 }
 
 

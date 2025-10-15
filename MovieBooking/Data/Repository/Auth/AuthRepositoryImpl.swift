@@ -41,7 +41,7 @@ public class AuthRepositoryImpl: AuthInterface {
 
   public func currentSession() async throws -> UserEntity {
     let session = try await client.auth.session
-    return UserEntity.from(session: session)
+    return session.toDomain()
   }
 
   public func signInWithAppleOnce(
@@ -62,5 +62,33 @@ public class AuthRepositoryImpl: AuthInterface {
     }
 
     return try await currentSession()
+  }
+
+  public func signInWithSocial(type: SocialType) async throws -> UserEntity {
+    try await client.auth.signInWithOAuth(
+      provider: type.supabaseProvider,
+      queryParams: type.promptParams
+    )
+
+    let session: Session = try await waitForSignedInSession()
+
+    return session.toDomain()
+  }
+
+
+  private func waitForSignedInSession(
+    timeout: TimeInterval = 20,
+    interval: TimeInterval = 0.3
+  ) async throws -> Session {
+    let deadline = Date().addingTimeInterval(timeout)
+
+    while Date() < deadline {
+      if let s = try? await client.auth.session {
+        return s
+      }
+      try await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+    }
+
+    throw URLError(.timedOut)
   }
 }

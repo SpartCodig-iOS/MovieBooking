@@ -30,6 +30,8 @@ final public class MockAuthRepositoryImpl : AuthInterface {
     UserEntity()
   }
 
+
+
   // MARK: - Call tracking
   public private(set) var idTokenCallCount = 0
   public private(set) var signInWithAppleCallCount = 0
@@ -43,7 +45,7 @@ final public class MockAuthRepositoryImpl : AuthInterface {
   public private(set) var lastOnceParams: (credential: ASAuthorizationAppleIDCredential, nonce: String)?
 
 
-  public init() {}
+  nonisolated public init() {}
 
 
   public func idToken(
@@ -83,6 +85,10 @@ final public class MockAuthRepositoryImpl : AuthInterface {
     signInWithAppleOnceCallCount += 1
     lastOnceParams = (credential, nonce)
     return try await signInWithAppleOnceHandler(credential, nonce)
+  }
+
+  public func signInWithSocial(type: SocialType) async throws -> UserEntity {
+    return UserEntity()
   }
 }
 

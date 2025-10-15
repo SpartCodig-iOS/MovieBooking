@@ -15,4 +15,5 @@ public protocol AuthInterface: Sendable {
   func updateDisplayName(_ name: String) async throws
   func currentSession() async throws -> UserEntity
   func signInWithAppleOnce(credential: ASAuthorizationAppleIDCredential, nonce: String) async throws -> UserEntity
+  func signInWithSocial(type: SocialType) async throws -> UserEntity
 }
