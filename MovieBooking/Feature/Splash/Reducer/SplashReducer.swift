@@ -1,5 +1,5 @@
 //
-//  Splash.swift
+//  SplashReducer.swift
 //  MovieBooking
 //
 //  Created by Wonji Suh  on 10/14/25.
@@ -12,7 +12,7 @@ import SwiftUI
 
 
 @Reducer
-public struct Splash {
+public struct SplashReducer {
   public init() {}
 
   @ObservableState
@@ -89,7 +89,7 @@ public struct Splash {
   }
 }
 
-extension Splash {
+extension SplashReducer {
   private func handleViewAction(
     state: inout State,
     action: View

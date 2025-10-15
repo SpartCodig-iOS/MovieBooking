@@ -8,7 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
-@ViewAction(for: Splash.self)
+@ViewAction(for: SplashReducer.self)
 struct SplashView: View {
   @State var store: StoreOf<Splash>
 
@@ -90,7 +90,7 @@ extension SplashView {
 
 
 #Preview {
-  SplashView(store: .init(initialState: Splash.State(), reducer: {
-    Splash()
+  SplashView(store: .init(initialState: SplashReducer.State(), reducer: {
+    SplashReducer()
   }))
 }
