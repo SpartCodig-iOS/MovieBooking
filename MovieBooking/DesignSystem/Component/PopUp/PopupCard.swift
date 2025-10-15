@@ -12,11 +12,11 @@ struct PopupCard<Content: View>: View {
   init(@ViewBuilder content: () -> Content) { self.content = content() }
 
   var body: some View {
-    VStack(spacing: 16) {
+    VStack(spacing: 10) {
 
       content
     }
-    .padding(.vertical, 20)
+    .padding(.vertical, 10)
     .padding(.horizontal, 10)
     .background(
       RoundedRectangle(cornerRadius: 20, style: .continuous)
