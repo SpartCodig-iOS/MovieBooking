@@ -11,8 +11,8 @@ protocol TargetType: URLRequestConvertible {
     var baseURL: String { get }
     var path: String { get }
     var method: HTTPMethod { get }
-    var headers: [String: String]? { get }
-    var parameters: ParameterEncoding? { get }
+    var headers: HTTPHeaders { get }
+    var parameters: RequestParameter? { get }
 }
 
 extension TargetType {
@@ -38,7 +38,7 @@ extension TargetType {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         
-        headers?.forEach {
+        headers.dictionary.forEach {
             request.setValue($0.value, forHTTPHeaderField: $0.key)
         }
         
@@ -46,11 +46,20 @@ extension TargetType {
             do {
                 let encoder = JSONEncoder()
                 request.httpBody = try encoder.encode(encodable)
+                
+                // Content-Type이 없으면 자동 추가
+                if request.value(forHTTPHeaderField: "Content-Type") == nil {
+                    request.setValue(ContentType.json.rawValue, forHTTPHeaderField: "Content-Type")
+                }
             } catch {
                 throw NetworkError.encodingError(error)
             }
         }
         
         return request
+    }
+    
+    var headers: HTTPHeaders {
+        return HTTPHeaders()  // 기본값: 빈 헤더
     }
 }

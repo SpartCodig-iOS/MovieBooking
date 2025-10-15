@@ -61,11 +61,13 @@ extension UserAPI: TargetType {
         }
     }
     
-    var headers: [String : String]? {
-        return ["Content-Type": "application/json"]
+    var headers: HTTPHeaders {
+        var headers = HTTPHeaders()
+        headers.add(.contentType(.json))
+        return headers
     }
     
-    var parameters: ParameterEncoding? {
+    var parameters: RequestParameter? {
         switch self {
         case .user, .delete:
             return nil

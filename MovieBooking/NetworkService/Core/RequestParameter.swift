@@ -1,5 +1,5 @@
 //
-//  PrameterEncoding.swift
+//  RequestParameter.swift
 //  MovieBooking
 //
 //  Created by 홍석현 on 10/14/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ParameterEncoding {
+enum RequestParameter {
     case query(Encodable)
     case body(Encodable)
 }
