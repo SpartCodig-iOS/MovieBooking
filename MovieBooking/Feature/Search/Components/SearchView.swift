@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SearchView: View {
-  let movies: [String] = ["1","2","3","4"]
+  let movies: [Movie]
   let columns: [GridItem] = [
     GridItem(.flexible()),
     GridItem(.flexible())
@@ -22,8 +22,8 @@ struct SearchView: View {
 
       ScrollView {
         LazyVGrid(columns: columns, spacing: 20) {
-          ForEach(movies, id: \.self) { _ in
-            MovieCardView()
+          ForEach(movies) { movie in
+            MovieCardView(movieTitle: movie.title, movieRating: Int(movie.voteAverage))
           }
         }
       }
@@ -31,6 +31,6 @@ struct SearchView: View {
   }
 }
 
-#Preview {
-  SearchView()
-}
+//#Preview {
+//  SearchView()
+//}

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct MovieCardView: View {
+  let movieTitle: String
+  let movieRating: Int
+
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
       Image("movie")
@@ -18,16 +21,16 @@ struct MovieCardView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .shadow(radius: 3, y: 3)
 
-      Text("Movie Title")
+      Text(movieTitle)
         .font(.system(size: 16))
         .frame(width: 150, alignment: .leading)
         .lineLimit(1)
 
-      StarRatingView(rating: 3)
+      StarRatingView(rating: movieRating)
     }
   }
 }
 
 #Preview {
-  MovieCardView()
+  MovieCardView(movieTitle: "mvTitle", movieRating: 4)
 }
