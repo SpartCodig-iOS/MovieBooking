@@ -28,18 +28,20 @@ public struct LoginReducer {
     @Shared var userEntity: UserEntity
 
     public init(
-      userEntity: UserEntity = .init()
+      userEntity: UserEntity
     ) {
       self._userEntity = Shared(wrappedValue: userEntity, .inMemory("UserEntity"))
     }
   }
-
+  
+  @CasePathable
   public enum Action: ViewAction, BindableAction {
     case binding(BindingAction<State>)
     case view(View)
     case async(AsyncAction)
     case inner(InnerAction)
     case navigation(NavigationAction)
+    case showErrorPopUp(Bool)
 
   }
 
@@ -47,6 +49,7 @@ public struct LoginReducer {
   @CasePathable
   public enum View: Equatable {
     case closePopUp(Bool)
+    case onAppear
   }
 
 
@@ -56,6 +59,7 @@ public struct LoginReducer {
     case prepareAppleRequest(ASAuthorizationAppleIDRequest)
     case appleCompletion(Result<ASAuthorization, Error>)
     case signInWithSocial(social: SocialType)
+    case fetchLastLoginSession
 
   }
   //MARK: - 앱내에서 사용하는 액션
@@ -63,6 +67,7 @@ public struct LoginReducer {
     case setUser(UserEntity)
     case setAuthError(String)
     case setNonce(String?)
+    case setSocialType(SocialType?)
   }
 
   //MARK: - NavigationAction
@@ -72,7 +77,8 @@ public struct LoginReducer {
   }
 
 
-  nonisolated(unsafe) enum LoginCancelID: Hashable, Sendable {
+  nonisolated enum LoginCancelID: Hashable, Sendable {
+    case session
     case apple
     case social
   }
@@ -85,7 +91,14 @@ public struct LoginReducer {
     BindingReducer()
     Reduce { state, action in
       switch action {
+        case .binding(\.showErrorPopUp):
+          return .none
+
         case .binding(_):
+          return .none
+
+        case let .showErrorPopUp(bool):
+          state.showErrorPopUp = bool
           return .none
 
         case .view(let viewAction):
@@ -113,6 +126,9 @@ extension LoginReducer {
       case .closePopUp(let showErrorPopUp):
         state.showErrorPopUp = showErrorPopUp
         return .none
+
+      case .onAppear:
+        return .send(.async(.fetchLastLoginSession))
     }
   }
 
@@ -145,7 +161,7 @@ extension LoginReducer {
             await send(.inner(.setAuthError(error.localizedDescription)))
           }
         }
-        .debounce(id: LoginCancelID.apple, for: 0.1, scheduler: mainQueue)
+//        .debounce(id: LoginCancelID.apple, for: 0.1, scheduler: mainQueue)
 
       case .signInWithSocial(let social):
         return .run { send in
@@ -161,7 +177,23 @@ extension LoginReducer {
               await send(.inner(.setAuthError(error.localizedDescription)))
           }
       }
-        .debounce(id: LoginCancelID.social, for: 0.1, scheduler: mainQueue)
+//        .debounce(id: LoginCancelID.social, for: 0.1, scheduler: mainQueue)
+
+      case .fetchLastLoginSession:
+        return .run {  send in
+          let sessionResult = await Result {
+            try await authUseCase.fetchCurrentSocialType()
+          }
+
+          switch sessionResult {
+            case .success(let sessionData):
+               await send(.inner(.setSocialType(sessionData)))
+
+            case .failure(let error):
+              #logDebug("세션 정보 가져오기 실패", error.localizedDescription)
+          }
+        }
+//        .debounce(id: LoginCancelID.session, for: 0.1, scheduler: mainQueue)
     }
   }
 
@@ -192,13 +224,15 @@ extension LoginReducer {
       case .setNonce(let nonce):
         state.currentNonce = nonce
         return .none
+
+      case .setSocialType(let type):
+              state.socialType = type
+              return .none
     }
   }
 }
 
 
-
-// MARK: - Hashable for Login.State (explicit, uses wrapped values)
 extension LoginReducer.State: Hashable {
   public static func == (lhs: LoginReducer.State, rhs: LoginReducer.State) -> Bool {
     lhs.socialType == rhs.socialType &&

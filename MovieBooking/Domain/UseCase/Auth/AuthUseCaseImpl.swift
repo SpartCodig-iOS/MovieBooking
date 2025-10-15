@@ -51,6 +51,10 @@ public struct AuthUseCaseImpl: AuthInterface {
   public func signInWithSocial(type: SocialType) async throws -> UserEntity {
     return try await repository.signInWithSocial(type: type)
   }
+
+  public func fetchCurrentSocialType() async throws -> SocialType? {
+    return try await repository.fetchCurrentSocialType()
+  }
 }
 
 

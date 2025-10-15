@@ -11,4 +11,7 @@ public extension ShapeStyle where Self == Color {
   static var basicPurple: Color { .init(hex: "503396") }
   static var violet: Color { .init(hex: "9333EA") }
   static var brightYellow: Color { .init(hex: "FEE500") }
+  static var lightLavender: Color { .init(hex: "#C7B6E1") }
+  static var textPrimary: Color { .init(hex: "212121") }
+  static var textSecondary: Color { .init(hex: "9E9E9E") }
 }

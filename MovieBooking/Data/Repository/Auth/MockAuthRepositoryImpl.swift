@@ -90,6 +90,10 @@ final public class MockAuthRepositoryImpl : AuthInterface {
   public func signInWithSocial(type: SocialType) async throws -> UserEntity {
     return UserEntity()
   }
+
+  public func fetchCurrentSocialType() async throws -> SocialType? {
+    return nil
+  }
 }
 
 

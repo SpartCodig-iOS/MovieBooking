@@ -8,8 +8,11 @@
 import Foundation
 import AuthenticationServices
 import Supabase
+import LogMacro
 
 public class AuthRepositoryImpl: AuthInterface {
+
+  
   private let client = SuperBaseManger.shared.client
 
   nonisolated public init() {}
@@ -71,6 +74,8 @@ public class AuthRepositoryImpl: AuthInterface {
     )
 
     let session: Session = try await waitForSignedInSession()
+    let user = session.user
+    #logDebug("✅ 소셜 로그인 완료 → \(user.email ?? "unknown") / \(user.appMetadata["provider"]?.stringValue ?? "")")
 
     return session.toDomain()
   }
@@ -91,4 +96,14 @@ public class AuthRepositoryImpl: AuthInterface {
 
     throw URLError(.timedOut)
   }
+
+
+  public func fetchCurrentSocialType() async throws -> SocialType? {
+    let session  = try await client.auth.session
+    let user = session.user
+    let raw = user.appMetadata["provider"]?.stringValue ?? "unknown"
+    return SocialType(rawValue: raw)
+  }
+
+
 }

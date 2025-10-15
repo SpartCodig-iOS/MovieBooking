@@ -10,19 +10,21 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppView: View {
-  @Bindable var store: StoreOf<AppReducer>
+  @State var store: StoreOf<AppReducer>
 
   var body: some View {
-    SwitchStore(store) { state in
-      switch state {
-      case .splash:
-        if let store = store.scope(state: \.splash, action: \.scope.splash) {
-          SplashView(store: store)
-        }
+    WithPerceptionTracking {
+      SwitchStore(store) { state in
+        switch state {
+        case .splash:
+          if let store = store.scope(state: \.splash, action: \.scope.splash) {
+            SplashView(store: store)
+          }
 
-      case .auth:
-        if let store = store.scope(state: \.auth, action: \.scope.auth) {
-          AuthCoordinatorView(store: store)
+        case .auth:
+          if let store = store.scope(state: \.auth, action: \.scope.auth) {
+            AuthCoordinatorView(store: store)
+          }
         }
       }
     }
