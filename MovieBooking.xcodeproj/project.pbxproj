@@ -45,6 +45,26 @@
 			);
 			target = F24B8FE92E9D0D2900EF7944 /* MovieBooking */;
 		};
+		C834FADB2E9DF8F700834FDC /* Exceptions for "MovieBooking" folder in "MovieBookingTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Data/DataSources/APIConfiguration.swift,
+				Data/DataSources/MovieDataSource.swift,
+				Data/DTO/Response/MovieDetailResponseDTO.swift,
+				NetworkService/Core/ContentType.swift,
+				NetworkService/Core/HTTPHeader.swift,
+				NetworkService/Core/HTTPHeaders.swift,
+				NetworkService/Core/HTTPMethod.swift,
+				NetworkService/Core/RequestParameter.swift,
+				NetworkService/Core/TargetType.swift,
+				NetworkService/Core/URLRequestConvertible.swift,
+				NetworkService/Error/NetworkError.swift,
+				NetworkService/Monitoring/NetworkEventMonitor.swift,
+				NetworkService/Monitoring/NetworkLogger.swift,
+				NetworkService/Provider/Provider.swift,
+			);
+			target = F24B8FF62E9D0D2B00EF7944 /* MovieBookingTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +72,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				7F6F8C092E9DCCD60046FA0E /* Exceptions for "MovieBooking" folder in "MovieBooking" target */,
+				C834FADB2E9DF8F700834FDC /* Exceptions for "MovieBooking" folder in "MovieBookingTests" target */,
 			);
 			path = MovieBooking;
 			sourceTree = "<group>";
@@ -515,7 +536,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = URUB4S4795;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.minhee.MovieBookingTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -539,7 +560,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = URUB4S4795;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.minhee.MovieBookingTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
