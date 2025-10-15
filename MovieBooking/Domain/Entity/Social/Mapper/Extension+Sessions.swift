@@ -8,19 +8,32 @@
 import Supabase
 import Foundation
 
-extension UserEntity {
-  static func from(session: Session) -> UserEntity {
-    let user = session.user
-    let providerRaw = (user.appMetadata["provider"]?.stringValue) ?? "unknown"
+extension Session {
+  func toDomain() -> UserEntity {
+    let user = self.user
+
+    let providerRaw = user.appMetadata["provider"]?.stringValue ?? "unknown"
     let provider = SocialType(rawValue: providerRaw) ?? .none
-    let display = user.userMetadata["display_name"]?.stringValue
-    let tokens = AuthTokens(accessToken: session.accessToken, refreshToken: session.refreshToken)
+
+    let display: String? = {
+      if let s = user.userMetadata["display_name"]?.stringValue { return s }
+      if let s = user.userMetadata["full_name"]?.stringValue { return s }
+      if let s = user.userMetadata["name"]?.stringValue { return s }
+      let family = user.userMetadata["family_name"]?.stringValue
+      let given  = user.userMetadata["given_name"]?.stringValue
+      let joined = [family, given].compactMap { $0 }.joined()
+      return joined.isEmpty ? nil : joined
+    }()
+
     return .init(
       id: user.id.uuidString,
       email: user.email,
       displayName: display,
-      provider: provider ?? .none,
-      tokens: tokens
+      provider: provider,
+      tokens: .init(
+        accessToken: self.accessToken,
+        refreshToken: self.refreshToken
+      )
     )
   }
 }

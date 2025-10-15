@@ -8,6 +8,7 @@
 import Foundation
 
 import SwiftUI
+import Supabase
 
 public enum SocialType: String, CaseIterable, Identifiable, Hashable {
   case none
@@ -46,28 +47,40 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
 
   var color: Color {
     switch self {
-      case .apple:
-        return .black
-      case .google:
-        return .white
-      case .kakao:
-        return .brightYellow
-        return .white
-      case .none:
-        return .white
+      case .apple: return .black
+      case .google: return .white
+      case .kakao: return .brightYellow
+      case .none: return .white
     }
   }
 
   var textColor: Color {
-      switch self {
+    switch self {
       case .apple:  return .white
       case .google: return .primary
       case .kakao:  return .black
-        case .none: return .white
-      }
+      case .none: return .white
     }
+  }
 
   var hasBorder: Bool {
-      self == .google
+    self == .google
+  }
+
+  var supabaseProvider: Auth.Provider {
+    switch self {
+      case .kakao: return .kakao
+      case .google: return .google
+      case .apple: return .apple
+      case .none: return .email
     }
+  }
+
+  var promptParams: [(name: String, value: String?)] {
+    switch self {
+      case .kakao:  return [("prompt", "login")]
+      case .google: return [("prompt", "select_account")]
+      case .apple, .none: return []
+    }
+  }
 }
