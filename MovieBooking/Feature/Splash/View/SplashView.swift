@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 
+@ViewAction(for: Splash.self)
 struct SplashView: View {
   @State var store: StoreOf<Splash>
 
@@ -34,7 +35,7 @@ struct SplashView: View {
       .opacity(store.fadeOut ? 0.0 : 1.0)
       .animation(.easeInOut(duration: 1), value: store.fadeOut)
       .onAppear {
-        store.send(.view(.onAppear))
+        send(.onAppear)
       }
     }
   }
