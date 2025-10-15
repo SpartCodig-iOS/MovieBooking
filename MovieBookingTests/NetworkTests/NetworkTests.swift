@@ -95,7 +95,7 @@ struct NetworkTests {
         let email: String
     }
 
-    let provider = NetworkProvider()
+    let provider = NetworkProvider.default
     
     @Test("GET 요청 테스트")
     func getUserTest() async throws {
@@ -190,7 +190,7 @@ struct NetworkTests {
             var path: String { "/test" }
             var method: HTTPMethod { .get }
             var headers: [String : String]? { nil }
-            var parameters: ParameterEncoding? { nil }
+            var parameters: RequestParameter? { nil }
         }
 
         do {

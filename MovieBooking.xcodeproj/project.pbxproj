@@ -38,6 +38,9 @@
 		C834FADB2E9DF8F700834FDC /* Exceptions for "MovieBooking" folder in "MovieBookingTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Data/DataSources/APIConfiguration.swift,
+				Data/DataSources/MovieDataSource.swift,
+				Data/DTO/Response/MovieDetailResponseDTO.swift,
 				NetworkService/Core/ContentType.swift,
 				NetworkService/Core/HTTPHeader.swift,
 				NetworkService/Core/HTTPHeaders.swift,
@@ -433,7 +436,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = URUB4S4795;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -466,7 +469,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = URUB4S4795;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

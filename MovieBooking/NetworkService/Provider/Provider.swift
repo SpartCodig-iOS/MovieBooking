@@ -11,7 +11,9 @@ class NetworkProvider {
     private let session: URLSession
     private var eventMonitors: [NetworkEventMonitor]
     
-    init(
+    static let `default` = NetworkProvider()
+    
+    private init(
         session: URLSession = .shared,
         eventMonitors: [NetworkEventMonitor] = [LoggerEventMonitor()]
     ) {
@@ -128,6 +130,8 @@ class NetworkProvider {
     private func decode<T: Decodable>(_ data: Data) throws -> T {
         do {
             let decoder = JSONDecoder()
+            // 카멜케이스로 CodingKeys 만들지 않아도 됨 
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             return try decoder.decode(T.self, from: data)
         } catch {
             throw NetworkError.decodingError(error)
