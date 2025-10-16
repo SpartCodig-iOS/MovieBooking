@@ -7,6 +7,7 @@
 
 import UIKit
 import WeaveDI
+import Perception
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -15,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     WeaveDI.Container.bootstrapInTask { _ in
       await AppDIManager.shared.registerDefaultDependencies()
     }
+
+    isPerceptionCheckingEnabled = false
 
     return true
   }

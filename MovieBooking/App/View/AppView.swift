@@ -10,7 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppView: View {
-  @State var store: StoreOf<AppReducer>
+  @Perception.Bindable var store: StoreOf<AppReducer>
 
   var body: some View {
     WithPerceptionTracking {
