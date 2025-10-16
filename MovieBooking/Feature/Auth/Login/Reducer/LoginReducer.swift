@@ -24,13 +24,25 @@ public struct LoginReducer {
     var currentNonce: String? = nil
     var authError: String? = nil
     var showErrorPopUp: Bool = false
+    @Shared(.appStorage("loginId"))
+    var loginId : String = ""
+    var loginPassword: String = ""
 
     @Shared var userEntity: UserEntity
+    @Shared(.appStorage("isSaveUserId"))
+    var saveUserId: Bool = false
 
     public init(
       userEntity: UserEntity
     ) {
       self._userEntity = Shared(wrappedValue: userEntity, .inMemory("UserEntity"))
+      if saveUserId == true {
+        self.$userEntity.withLock{
+          $0.userId = loginId
+        }
+      } else {
+        self.$loginId.withLock { $0 = "" }
+      }
     }
   }
   
@@ -42,6 +54,8 @@ public struct LoginReducer {
     case inner(InnerAction)
     case navigation(NavigationAction)
     case showErrorPopUp(Bool)
+    case loginId(String)
+    case loginPassword(String)
 
   }
 
@@ -97,8 +111,12 @@ public struct LoginReducer {
         case .binding(_):
           return .none
 
-        case let .showErrorPopUp(bool):
-          state.showErrorPopUp = bool
+        case let .loginId(id):
+          state.$loginId.withLock { $0 = id }
+          return .none
+
+        case let .loginPassword(password):
+          state.loginPassword = password
           return .none
 
         case .view(let viewAction):
@@ -112,6 +130,10 @@ public struct LoginReducer {
 
         case .navigation(let navigationAction):
           return handleNavigationAction(state: &state, action: navigationAction)
+
+        case let .showErrorPopUp(popup):
+          state.showErrorPopUp = popup
+          return .none
       }
     }
   }
@@ -239,7 +261,10 @@ extension LoginReducer.State: Hashable {
     lhs.currentNonce == rhs.currentNonce &&
     lhs.userEntity == rhs.userEntity &&
     lhs.authError == rhs.authError &&
-    lhs.showErrorPopUp == rhs.showErrorPopUp
+    lhs.showErrorPopUp == rhs.showErrorPopUp  &&
+    lhs.loginId == rhs.loginId &&
+    lhs.loginPassword == rhs.loginPassword &&
+    lhs.saveUserId == rhs.saveUserId
   }
   public func hash(into hasher: inout Hasher) {
     hasher.combine(socialType)
@@ -247,5 +272,8 @@ extension LoginReducer.State: Hashable {
     hasher.combine(userEntity)
     hasher.combine(authError)
     hasher.combine(showErrorPopUp)
+    hasher.combine(loginId)
+    hasher.combine(loginPassword)
+    hasher.combine(saveUserId)
   }
 }
