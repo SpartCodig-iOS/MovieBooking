@@ -11,6 +11,7 @@ import ComposableArchitecture
 struct FormTextField: View {
   enum Kind { case text, email, password }
 
+  var title: String? =  nil
   let placeholder: String
   @Binding var text: String
   var kind: Kind = .text
@@ -20,30 +21,34 @@ struct FormTextField: View {
   var submitLabel: SubmitLabel = .done
   var onSubmit: (() -> Void)? = nil
 
+
   var isFocused: FocusState<Bool>.Binding? = nil
 
-  // MARK: - Internal Focus
   @FocusState private var internalFocused: Bool
-  @State var showPassword: Bool = false
+  @State private var showPassword: Bool = false
 
-  // MARK: - Body
   var body: some View {
     WithPerceptionTracking {
       VStack(alignment: .leading, spacing: 8) {
-        ZStack {
-          RoundedRectangle(cornerRadius: 12)
-            .fill(.blueGray)
+        if  title?.isEmpty  != nil {
+          Text(title ?? "")
+          .font(.pretendardFont(family: .bold, size: 16))
+          .foregroundStyle(.textPrimary)
 
+          Spacer()
+            .frame(height: 2)
+        }
+
+
+        ZStack {
+          RoundedRectangle(cornerRadius: 12).fill(.blueGray)
           RoundedRectangle(cornerRadius: 12)
             .strokeBorder(currentFocused ? .indigo500 : .clear, lineWidth: 2)
             .animation(.easeInOut(duration: 0.2), value: currentFocused)
 
           HStack(spacing: 8) {
-            if kind == .password {
-              Spacer().frame(width: 4)
-            }
+            if kind == .password { Spacer().frame(width: 4) }
 
-            // 입력 필드
             inputField
               .foregroundStyle(.textPrimary)
               .tint(.basicPurple)
@@ -76,18 +81,18 @@ struct FormTextField: View {
 
         if let error, !error.isEmpty {
           Text(error)
-            .font(.system(size: 12))
+            .font(.pretendardFont(family: .medium, size: 12))
             .foregroundStyle(.statusError)
         } else if let helper, !helper.isEmpty {
           Text(helper)
-            .font(.system(size: 12))
+            .font(.pretendardFont(family: .medium, size: 12))
             .foregroundStyle(.gray500)
         }
       }
     }
   }
 
-  // MARK: - Private helpers
+  // MARK: - Private
 
   private var inputField: some View {
     Group {
@@ -131,14 +136,17 @@ struct FormTextField: View {
   }
 }
 
-// ✅ 작은 헬퍼: .focused(...)를 선택적으로 적용
 private extension View {
   func applyFocus(_ binding: FocusState<Bool>.Binding) -> some View {
-    self.focused(binding)
+    focused(binding)
   }
 }
 
 
 #Preview() {
-  FormTextField(placeholder: "tesx", text: .constant("") )
+  FormTextField(
+    title: "아잉디",
+    placeholder: "tesx",
+    text: .constant("")
+  )
 }
