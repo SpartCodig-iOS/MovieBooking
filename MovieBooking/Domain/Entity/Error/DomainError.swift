@@ -15,6 +15,8 @@ public enum DomainError: Error, Equatable {
   case validationFailed([String])
   case dependencyUnavailable
   case authenticationFailed
+  case loginFailed
+  case signUpFailed
   case unauthorized(String)
   case unknown
 }
@@ -45,6 +47,12 @@ extension DomainError: LocalizedError {
         // MARK: - Auth
       case .authenticationFailed:
         return "인증에 실패했습니다. 다시 로그인해주세요."
+
+      case .loginFailed:
+        return "로그인에 실패했습니다. 다시 로그인해주세요."
+
+      case .signUpFailed:
+        return "회원가입 실패했습니다. 다시 한번 확인해주세요."
 
       case .unauthorized(let message):
         return "인증에 실패했습니다. 다시 로그인해주세요 : \(message)"
