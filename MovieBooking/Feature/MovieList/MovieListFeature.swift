@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+import SwiftUI
 
 @Reducer
 struct MovieListFeature {
@@ -18,6 +19,7 @@ struct MovieListFeature {
     var upcomingMovies: [Movie] = []
     var popularMovies: [Movie] = []
     var isLoading = false
+    @Presents var alert: AlertState<Action.Alert>?
   }
 
   enum Action {
@@ -27,6 +29,11 @@ struct MovieListFeature {
     case fetchUpcomingResponse(Result<[Movie], Error>)
     case fetchPopularResponse(Result<[Movie], Error>)
     case selectMovie
+    case alert(PresentationAction<Alert>)
+
+    enum Alert: Equatable {
+      case retry
+    }
   }
 
   var body: some Reducer<State, Action> {
@@ -37,6 +44,7 @@ struct MovieListFeature {
 
       case .fetchMovie:
         state.isLoading = true
+        state.alert = nil
         return .run { send in
           await withThrowingTaskGroup(of: Void.self) { group in
             // Now Playing
@@ -93,12 +101,32 @@ struct MovieListFeature {
       case let .fetchNowPlayingResponse(.failure(error)),
         let .fetchUpcomingResponse(.failure(error)),
         let .fetchPopularResponse(.failure(error)):
-        print("❌ 영화 가져오기 실패: \(error)")
+        let networkError = (error as? NetworkError) ?? .unknown(error)
+        let message = networkError.errorDescription ?? "잠시 후 다시 시도해 주세요"
+        print("❌ 영화 가져오기 실패: \(networkError)")
         state.isLoading = false
+        state.alert = AlertState {
+          TextState("영화 목록을 불러오지 못했습니다")
+        } actions: {
+          ButtonState(action: .send(.retry)) {
+            TextState("재시도")
+          }
+          ButtonState(role: .cancel) {
+            TextState("확인")
+          }
+        } message: {
+          TextState(message)
+        }
         return .none
 
       case .selectMovie:
         //TODO: 상세로 넘어감
+        return .none
+
+      case .alert(.presented(.retry)):
+        return .send(.fetchMovie)
+
+      case .alert:
         return .none
       }
     }

@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 
 struct MovieListView: View {
-  let store: StoreOf<MovieListFeature>
+  @Perception.Bindable var store: StoreOf<MovieListFeature>
 
   var body: some View {
     ScrollView(showsIndicators: false) {
@@ -22,6 +22,7 @@ struct MovieListView: View {
     .task {
       await store.send(.onAppear).finish()
     }
+    .alert($store.scope(state: \.alert, action: \.alert))
   }
 }
 

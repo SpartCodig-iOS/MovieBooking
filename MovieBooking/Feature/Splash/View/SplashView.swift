@@ -13,31 +13,37 @@ struct SplashView: View {
   @State var store: StoreOf<Splash>
 
   var body: some View {
-    ZStack {
-      LinearGradient(
-        gradient: Gradient(colors: [
-          .white,
-          .white,
-          .basicPurple.opacity(0.05)
-        ]),
-        startPoint: .top,
-        endPoint: .bottom
-      )
-      .ignoresSafeArea()
+//    ZStack {
+//      LinearGradient(
+//        gradient: Gradient(colors: [
+//          .white,
+//          .white,
+//          .basicPurple.opacity(0.05)
+//        ]),
+//        startPoint: .top,
+//        endPoint: .bottom
+//      )
+//      .ignoresSafeArea()
+//
+//      VStack(spacing: 24) {
+//
+//        splashLogo()
+//
+//        titleView()
+//      }
+//      .scaleEffect(store.fadeOut ? 0.95 : 1.0)
+//      .opacity(store.fadeOut ? 0.0 : 1.0)
+//      .animation(.easeInOut(duration: 1), value: store.fadeOut)
+//      .onAppear {
+//        send(.onAppear)
+//      }
+//    }
 
-      VStack(spacing: 24) {
-
-        splashLogo()
-
-        titleView()
+    MovieListView(
+      store: Store(initialState: MovieListFeature.State()) {
+        MovieListFeature()
       }
-      .scaleEffect(store.fadeOut ? 0.95 : 1.0)
-      .opacity(store.fadeOut ? 0.0 : 1.0)
-      .animation(.easeInOut(duration: 1), value: store.fadeOut)
-      .onAppear {
-        send(.onAppear)
-      }
-    }
+    )
   }
 }
 
