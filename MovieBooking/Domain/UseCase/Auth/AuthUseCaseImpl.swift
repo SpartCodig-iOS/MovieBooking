@@ -55,6 +55,32 @@ public struct AuthUseCaseImpl: AuthInterface {
   public func fetchCurrentSocialType() async throws -> SocialType? {
     return try await repository.fetchCurrentSocialType()
   }
+
+  public func signUpNormalUser(
+    name: String,
+    email: String,
+    password: String
+  ) async throws -> UserEntity {
+    return try await repository.signUpNormalUser(
+      name: name,
+      email: email,
+      password: password
+    )
+  }
+
+  public func loginlUser(
+    email: String,
+    password: String
+  ) async throws -> UserEntity {
+    return try await repository.loginlUser(
+      email: email,
+      password: password
+    )
+  }
+
+  public func resolveEmail(fromLoginId loginId: String) async throws -> String {
+    return try await repository.resolveEmail(fromLoginId: loginId)
+  }
 }
 
 

@@ -17,4 +17,15 @@ public protocol AuthInterface: Sendable {
   func signInWithAppleOnce(credential: ASAuthorizationAppleIDCredential, nonce: String) async throws -> UserEntity
   func signInWithSocial(type: SocialType) async throws -> UserEntity
   func fetchCurrentSocialType() async throws -> SocialType?
+  func signUpNormalUser(
+    name: String,
+    email: String,
+    password: String
+  ) async throws -> UserEntity
+  func loginlUser(
+    email: String,
+    password: String
+  ) async throws -> UserEntity
+
+  func resolveEmail(fromLoginId loginId: String) async throws -> String 
 }

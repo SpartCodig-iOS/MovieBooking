@@ -32,6 +32,7 @@ final public class MockAuthRepositoryImpl : AuthInterface {
 
 
 
+
   // MARK: - Call tracking
   public private(set) var idTokenCallCount = 0
   public private(set) var signInWithAppleCallCount = 0
@@ -93,6 +94,18 @@ final public class MockAuthRepositoryImpl : AuthInterface {
 
   public func fetchCurrentSocialType() async throws -> SocialType? {
     return nil
+  }
+
+  public func signUpNormalUser(name: String, email: String, password: String) async throws -> UserEntity {
+    return UserEntity()
+  }
+
+  public func loginlUser(email: String, password: String) async throws -> UserEntity {
+    return UserEntity()
+  }
+
+  public  func resolveEmail(fromLoginId loginId: String) async throws -> String  {
+    return ""
   }
 }
 
