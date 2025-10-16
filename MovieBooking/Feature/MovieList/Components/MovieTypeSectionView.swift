@@ -11,14 +11,39 @@ struct MovieTypeSectionView: View {
   let cardCount: Int
   let headerText: String
   let movies: [Movie]
+  @State private var currentIndex: Int = 0
 
   var body: some View {
     VStack(spacing: 10) {
-      HeaderView(headerText: headerText)
-      ScrollView(.horizontal, showsIndicators: false) {
-        HStack(spacing: 15) {
-          ForEach(movies) { movie in
-            MovieCardView(movieTitle: movie.title, movieRating: Int(movie.voteAverage / 2), posterPath: movie.posterPath)
+      HeaderView(
+        headerText: headerText,
+        onLeftTapped: {
+          if currentIndex > 0 {
+            currentIndex -= 1
+          }
+        },
+        onRightTapped: {
+          if currentIndex < movies.count - 1 {
+            currentIndex += 1
+          }
+        }
+      )
+      ScrollViewReader { proxy in
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(spacing: 15) {
+            ForEach(movies) { movie in
+              MovieCardView(
+                movieTitle: movie.title,
+                movieRating: Int(movie.voteAverage / 2),
+                posterPath: movie.posterPath
+              )
+              .id(movie.id)
+            }
+          }
+        }
+        .onChange(of: currentIndex) { newIndex in
+          withAnimation {
+            proxy.scrollTo(movies[newIndex].id, anchor: .leading)
           }
         }
       }
@@ -29,6 +54,8 @@ struct MovieTypeSectionView: View {
 
 struct HeaderView: View {
   let headerText: String
+  let onLeftTapped: () -> Void
+  let onRightTapped: () -> Void
 
   var body: some View {
     HStack(spacing: 10) {
@@ -37,13 +64,9 @@ struct HeaderView: View {
 
       Spacer()
 
-      CircularArrowButton(direction: .left) {
-        print("left")
-      }
+      CircularArrowButton(direction: .left, action: onLeftTapped)
 
-      CircularArrowButton(direction: .right) {
-        print("right")
-      }
+      CircularArrowButton(direction: .right, action: onRightTapped)
     }
   }
 }
