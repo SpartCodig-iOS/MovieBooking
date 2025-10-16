@@ -32,6 +32,7 @@ public struct AuthCoordinator {
 
   public enum NavigationAction: Equatable {
     case presentMain
+    case removeView
   }
 
 
@@ -62,6 +63,16 @@ extension AuthCoordinator {
       case .routeAction(id: _, action: .login(.navigation(.presentMain))):
         return .send(.navigation(.presentMain), animation: .easeIn)
 
+      case .routeAction(id: _, action: .login(.navigation(.presentSignUp))):
+        state.routes.push(.signUp(.init()))
+        return .none
+
+      case .routeAction(id: _, action: .signUp(.navigation(.backToLogin))):
+        return .send(.navigation(.removeView), animation: .easeIn)
+
+      case .routeAction(id: _, action: .signUp(.navigation(.presentMain))):
+        return .send(.navigation(.presentMain), animation: .easeIn)
+
       default:
         return .none
     }
@@ -74,6 +85,10 @@ extension AuthCoordinator {
     switch action {
       case .presentMain:
         return .none
+
+      case .removeView:
+        state.routes.goBackToRoot()
+        return .none
     }
   }
 }
@@ -83,5 +98,6 @@ extension AuthCoordinator {
   @Reducer(state: .equatable, .hashable)
   public enum AuthScreen {
     case login(LoginReducer)
+    case signUp(SignUpReducer)
   }
 }

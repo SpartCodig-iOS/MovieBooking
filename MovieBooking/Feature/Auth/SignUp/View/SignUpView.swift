@@ -89,26 +89,25 @@ extension SignUpView {
     .padding(.vertical, 10)
   }
 
-  
-
-@ViewBuilder
+  @ViewBuilder
   private func confirmSignUpButton() -> some View {
     VStack {
 
-      RoundedRectangle(cornerRadius: 12)
-        .fill(store.isEnable ? .violet.opacity(0.6) : .lightLavender)
-        .frame(height: 56)
-        .overlay {
-          Text("회원가입")
-            .pretendardFont(family: .semiBold, size: 16)
-            .foregroundStyle(.white)
-        }
-        .disabled(!store.isEnable)
-        .onTapGesture {
-          Task {
-            store.send(.async(.signUpUser))
+      Button {
+        Task { store.send(.async(.signUpUser)) }
+      } label: {
+        RoundedRectangle(cornerRadius: 12)
+          .fill(store.isEnable ? .violet.opacity(0.6) : .lightLavender)
+          .frame(height: 56)
+          .overlay {
+            Text("회원가입")
+              .pretendardFont(family: .semiBold, size: 16)
+              .foregroundStyle(.white)
           }
-        }
+          .contentShape(RoundedRectangle(cornerRadius: 12))
+      }
+      .buttonStyle(.plain)
+      .disabled(!store.isEnable)
     }
   }
 }

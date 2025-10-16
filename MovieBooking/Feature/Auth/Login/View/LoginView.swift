@@ -15,11 +15,9 @@ import Supabase
 @ViewAction(for: LoginReducer.self)
 struct LoginView: View {
   @Perception.Bindable var store: StoreOf<LoginReducer>
-
+  let repo = AuthRepositoryImpl()
   var body: some View {
     WithPerceptionTracking {
-      let popupDetail = store.authError ?? ""
-      let currentSocial = store.socialType
       @Perception.Bindable var store = store
 
       ScrollView {
@@ -29,15 +27,15 @@ struct LoginView: View {
             .frame(height: UIScreen.main.bounds.height * 0.15)
 
           loginLogo
-          
+
           loginTilte()
 
 
           LoginFormView(store: store) {
-            
+
           }
 
-          socialLoginButtonCard(currentSocialType: currentSocial)
+          socialLoginButtonCard(currentSocialType: store.socialType)
 
           authFooter()
 
@@ -52,21 +50,36 @@ struct LoginView: View {
       .scrollBounceBehavior(.basedOnSize)
       .ignoresSafeArea(.keyboard)
       .task {
-        send(.onAppear)   
+        send(.onAppear)
       }
+      .onAppear {
+        UIScrollView.appearance().bounces = false
+      }
+
       .floatingPopup(
         isPresented: $store.showErrorPopUp.sending(\.showErrorPopUp),
         alignment: .top
       ) {
         WithPerceptionTracking {
           SocialLoginErrorPopup(
-            message: popupDetail,
+            message: store.authErrorMesage ?? "",
             detail: store.authError ?? ""
           )
         }
       }
     }
+    .onOpenURL { url in
+      Task {
+        do {
+          try await supabase.auth.session(from: url)  // 또는 supabase.auth.handle(url)
+          // 여기서 SIGNED_IN 이벤트가 옵니다.
+        } catch {
+          print("session(from:) error:", error)
+        }
+      }
+    }
   }
+
 }
 
 extension LoginView {
@@ -109,43 +122,40 @@ extension LoginView {
 
   @ViewBuilder
   func socialLoginButtonCard(currentSocialType: SocialType?) -> some View {
-    WithPerceptionTracking {
+    let current = currentSocialType
 
-      let current = currentSocialType
+    LazyVStack {
+      VStack(spacing: 24) {
+        TitledDivider(title: "소셜 계정으로 로그인")
+          .frame(maxWidth: .infinity, alignment: .center)
 
-      LazyVStack {
-        VStack(spacing: 24) {
-          TitledDivider(title: "소셜 계정으로 로그인")
-            .frame(maxWidth: .infinity, alignment: .center)
+        HStack(spacing: 20) {
+          ForEach(SocialType.allCases.filter { $0 != .none && $0 != .email }) { type in
+            let isSelected = (current == type)
 
-          HStack(spacing: 20) {
-            ForEach(SocialType.allCases.filter { $0 != .none }) { type in
-              let isSelected = (current == type)
-
-              socialCircleButton(type: type, lastSocialLogin: type) {
-                store.send(.async(.signInWithSocial(social: type)))
-              }
-              .anchorPreference(key: ToolTipAnchorKey.self, value: .bounds) { anchor in
-                isSelected ? anchor : nil
-              }
+            socialCircleButton(type: type, lastSocialLogin: type) {
+              store.send(.async(.signInWithSocial(social: type)))
+            }
+            .anchorPreference(key: ToolTipAnchorKey.self, value: .bounds) { anchor in
+              isSelected ? anchor : nil
             }
           }
-          .frame(maxWidth: .infinity)
-          .overlayPreferenceValue(ToolTipAnchorKey.self) { anchor in
-            GeometryReader { proxy in
-              WithPerceptionTracking {
-                if let a = anchor {
-                  let rect = proxy[a]
-                  Tooltip(text: "마지막에 로그인한 계정이에요!")
-                    .position(x: rect.midX - 18, y: rect.minY - 20)
-                }
+        }
+        .frame(maxWidth: .infinity)
+        .overlayPreferenceValue(ToolTipAnchorKey.self) { anchor in
+          GeometryReader { proxy in
+            WithPerceptionTracking {
+              if let a = anchor {
+                let rect = proxy[a]
+                Tooltip(text: "마지막에 로그인한 계정이에요!")
+                  .position(x: rect.midX - 18, y: rect.minY - 20)
               }
             }
           }
         }
-        .padding(10)
-        .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
       }
+      .padding(10)
+      .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
     }
   }
 
@@ -232,7 +242,7 @@ extension LoginView {
           .font(.pretendardFont(family: .semiBold, size: 14))
           .foregroundColor(.basicPurple)
           .onTapGesture {
-
+            store.send(.navigation(.presentSignUp))
           }
       }
     }

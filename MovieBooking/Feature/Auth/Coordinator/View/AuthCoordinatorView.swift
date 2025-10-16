@@ -10,25 +10,27 @@ import SwiftUI
 import ComposableArchitecture
 import TCACoordinators
 
- struct AuthCoordinatorView: View {
+struct AuthCoordinatorView: View {
   @Perception.Bindable private var store: StoreOf<AuthCoordinator>
-
-   init(
+  
+  init(
     store: StoreOf<AuthCoordinator>
   ) {
     self.store = store
   }
-
-   var body: some View {
-    WithPerceptionTracking {
-      TCARouter(store.scope(state: \.routes, action: \.router)) { screens in
-        switch screens.case {
+  
+  var body: some View {
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screens in
+      switch screens.case {
         case .login(let loginStore):
           LoginView(store: loginStore)
             .navigationBarBackButtonHidden()
-
-
-        }
+          
+        case .signUp(let signUpStore):
+          SignUpView(store: signUpStore)
+            .navigationBarBackButtonHidden()
+          
+          
       }
     }
   }
