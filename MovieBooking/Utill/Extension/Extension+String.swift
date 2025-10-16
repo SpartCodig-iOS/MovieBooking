@@ -18,4 +18,19 @@ extension String {
     guard let data = Data(base64Encoded: base64) else { return nil }
     return try? JSONSerialization.jsonObject(with: data) as? [String: Any]
   }
+
+  /// 붙여넣기/오토필 대비: 공백/제로폭 제거 + 소문자
+  var normalizedId: String {
+    self.replacingOccurrences(of: "\u{00A0}", with: " ")
+      .replacingOccurrences(of: "\u{200B}", with: "")
+      .replacingOccurrences(of: "\u{200C}", with: "")
+      .replacingOccurrences(of: "\u{200D}", with: "")
+      .replacingOccurrences(of: "\u{FEFF}", with: "")
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .lowercased()
+  }
+
+  var looksLikeEmail: Bool {
+    range(of: #"^[^\s@]+@[^\s@]+\.[^\s@]+$"#, options: .regularExpression) != nil
+  }
 }
