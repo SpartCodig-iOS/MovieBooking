@@ -12,22 +12,23 @@ import Supabase
 
 public enum SocialType: String, CaseIterable, Identifiable, Hashable {
   case none
+  case email
   case apple
   case google
   case kakao
 
   public var id: String { rawValue }
 
-  var title: String {
+  var description: String {
     switch self {
-      case .none:
+      case .none, .email:
         return ""
       case .apple:
-        return "Apple로 로그인"
+        return "Apple"
       case .google:
-        return "Google로 로그인"
+        return "Google"
       case .kakao:
-        return "Kakao로 로그인"
+        return "Kakao"
     }
   }
 
@@ -39,7 +40,7 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
         return "google"
       case .kakao:
         return "kakao"
-      case .none:
+      case .none, .email:
         return ""
     }
   }
@@ -50,7 +51,7 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
       case .apple: return .black
       case .google: return .white
       case .kakao: return .brightYellow
-      case .none: return .white
+      case .none, .email: return .white
     }
   }
 
@@ -59,7 +60,7 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
       case .apple:  return .white
       case .google: return .primary
       case .kakao:  return .black
-      case .none: return .white
+      case .none, .email: return .white
     }
   }
 
@@ -72,7 +73,7 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
       case .kakao: return .kakao
       case .google: return .google
       case .apple: return .apple
-      case .none: return .email
+      case .none, .email: return .email
     }
   }
 
@@ -80,7 +81,7 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
     switch self {
       case .kakao:  return [("prompt", "login")]
       case .google: return [("prompt", "select_account")]
-      case .apple, .none: return []
+      case .apple, .none, .email: return []
     }
   }
 }
