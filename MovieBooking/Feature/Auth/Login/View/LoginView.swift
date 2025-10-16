@@ -12,44 +12,58 @@ import AuthenticationServices
 import ComposableArchitecture
 import Supabase
 
+@ViewAction(for: LoginReducer.self)
+struct LoginView: View {
+  @Perception.Bindable var store: StoreOf<LoginReducer>
 
-public struct LoginView: View {
-  @Bindable var store: StoreOf<LoginReducer>
-  private let repo = AuthRepositoryImpl()
+  var body: some View {
+    WithPerceptionTracking {
+      let popupDetail = store.authError ?? ""
+      let currentSocial = store.socialType
+      @Perception.Bindable var store = store
 
-  init(store: StoreOf<LoginReducer>) {
-    self.store = store
-  }
+      ScrollView {
+        LazyVStack {
 
-  public var body: some View {
-    VStack {
-      Spacer()
+          Spacer()
+            .frame(height: UIScreen.main.bounds.height * 0.15)
 
-      loginLogo
+          loginLogo
+          
+          loginTilte()
 
-      loginTitle()
 
-      socialLoginButtonCard()
-
-      Spacer()
-    }
-    .floatingPopup(
-      isPresented: $store.showErrorPopUp,
-      alignment: .top,
-    ) {
-      SocialLoginErrorPopup()
-    }
-    .task {
-      Task.detached {
-          do {
-              let session = try await SuperBaseManger.shared.client.auth.session
-              let user = session.user
-              let lastProvider = user.appMetadata["provider"]?.stringValue ?? "unknown"
-              let lastSignedInAt = user.lastSignInAt
-              print(lastProvider, lastSignedInAt as Any)
-          } catch {
-              print("세션 불러오기 실패:", error)
+          LoginFormView(store: store) {
+            
           }
+
+          socialLoginButtonCard(currentSocialType: currentSocial)
+
+          authFooter()
+
+
+          Spacer()
+            .frame(height: 10)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal, 24)
+      }
+      .scrollIndicators(.hidden)
+      .scrollBounceBehavior(.basedOnSize)
+      .ignoresSafeArea(.keyboard)
+      .task {
+        send(.onAppear)   
+      }
+      .floatingPopup(
+        isPresented: $store.showErrorPopUp.sending(\.showErrorPopUp),
+        alignment: .top
+      ) {
+        WithPerceptionTracking {
+          SocialLoginErrorPopup(
+            message: popupDetail,
+            detail: store.authError ?? ""
+          )
+        }
       }
     }
   }
@@ -72,6 +86,7 @@ extension LoginView {
       .shadow(color: .basicPurple.opacity(0.3), radius: 16, x: 0, y: 8)
       .overlay(
         Image(systemName: "film.fill")
+          .font(.pretendardFont(family: .medium, size: 48))
           .foregroundColor(.white)
       )
   }
@@ -79,7 +94,7 @@ extension LoginView {
   @ViewBuilder
   fileprivate func loginTilte() -> some View {
     VStack(spacing: 6) {
-      Text("MEGABOX")
+      Text("TicketSwift ")
         .font(.pretendardFont(family: .semiBold, size: 32))
         .foregroundColor(.primary)
 
@@ -93,149 +108,143 @@ extension LoginView {
   }
 
   @ViewBuilder
-  func socialLoginButtonCard() -> some View {
-    VStack(spacing: 24) {
+  func socialLoginButtonCard(currentSocialType: SocialType?) -> some View {
+    WithPerceptionTracking {
 
-      TitledDivider(title: "소셜 계정으로 로그인")
-      .frame(maxWidth: .infinity, alignment: .center)
+      let current = currentSocialType
 
-      VStack(spacing: 12) {
-        ForEach(SocialType.allCases.filter { $0 != .none }) { type in
-          socialLoginButton(type: type) {
-            Task {
-              store.send(.async(.signInWithSocial(social: type)))
+      LazyVStack {
+        VStack(spacing: 24) {
+          TitledDivider(title: "소셜 계정으로 로그인")
+            .frame(maxWidth: .infinity, alignment: .center)
+
+          HStack(spacing: 20) {
+            ForEach(SocialType.allCases.filter { $0 != .none }) { type in
+              let isSelected = (current == type)
+
+              socialCircleButton(type: type, lastSocialLogin: type) {
+                store.send(.async(.signInWithSocial(social: type)))
+              }
+              .anchorPreference(key: ToolTipAnchorKey.self, value: .bounds) { anchor in
+                isSelected ? anchor : nil
+              }
+            }
+          }
+          .frame(maxWidth: .infinity)
+          .overlayPreferenceValue(ToolTipAnchorKey.self) { anchor in
+            GeometryReader { proxy in
+              WithPerceptionTracking {
+                if let a = anchor {
+                  let rect = proxy[a]
+                  Tooltip(text: "마지막에 로그인한 계정이에요!")
+                    .position(x: rect.midX - 18, y: rect.minY - 20)
+                }
+              }
             }
           }
         }
+        .padding(10)
+        .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
       }
     }
-    .padding(24)
-    .background(RoundedRectangle(cornerRadius: 16).fill(.white))
-    .overlay(RoundedRectangle(cornerRadius: 16).stroke(.gray.opacity(0.1), lineWidth: 1))
-    .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
-    .padding(.horizontal, 24)
   }
 
-
   @ViewBuilder
-  fileprivate func socialLoginButton(
+  private func socialCircleButton(
     type: SocialType,
+    lastSocialLogin: SocialType,
     onTap: @escaping () -> Void
   ) -> some View {
-    if type == .apple {
-      ZStack {
-        HStack {
-          Spacer()
-          Image(systemName: type.image)
-            .resizable().scaledToFit()
-            .frame(width: 20, height: 20)
-            .foregroundStyle(.white)
-          Spacer().frame(width: 12)
-          Text(type.title)
-            .pretendardFont(family: .medium, size: 16)
-            .foregroundStyle(.white)
-          Spacer()
-        }
-        .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity, minHeight: 56)
-        .background(Color.black)
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+    WithPerceptionTracking {
+      let circleSize: CGFloat = 56
 
-        SignInWithAppleButton(.signIn) { request in
-          store.send(.async(.prepareAppleRequest(request)))
-        } onCompletion: { result in
-          store.send(.async(.appleCompletion(result)))
-        }
-        .frame(height: 56)
-        .frame(height: 56)
-        .frame(maxWidth: .infinity)
-        .cornerRadius(12)
-        .opacity(0.02)
-        .accessibilityLabel(Text(type.title))
-        .allowsHitTesting(true)
+      switch type {
+        case .apple:
+          ZStack {
+            Circle()
+              .fill(.black)
+              .frame(width: circleSize, height: circleSize)
+              .shadow(color: .black.opacity(0.08), radius: 8, y: 2)
+
+            Image(systemName: type.image)
+              .resizable()
+              .scaledToFit()
+              .frame(width: 22, height: 22)
+              .foregroundStyle(.white)
+
+            SignInWithAppleButton(.signIn) { request in
+              store.send(.async(.prepareAppleRequest(request)))
+            } onCompletion: { result in
+              store.send(.async(.appleCompletion(result)))
+            }
+            .frame(width: circleSize, height: circleSize)
+            .clipShape(Circle())
+            .opacity(0.02)
+            .allowsHitTesting(true)
+          }
+
+        case .google:
+          Button(action: onTap) {
+            Circle()
+              .fill(Color.white)
+              .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+              .frame(width: circleSize, height: circleSize)
+              .shadow(color: .black.opacity(0.08), radius: 8, y: 2)
+              .overlay(
+                Image(type.image)
+                  .resizable().scaledToFit()
+                  .frame(width: 22, height: 22)
+              )
+          }
+          .buttonStyle(.plain)
+
+        case .kakao:
+          Button(action: onTap) {
+            Circle()
+              .fill(.brightYellow)
+              .frame(width: circleSize, height: circleSize)
+              .shadow(color: .black.opacity(0.08), radius: 8, y: 2)
+              .overlay(
+                Image(type.image)
+                  .resizable().scaledToFit()
+                  .frame(width: 40, height: 40)
+                  .foregroundStyle(.black)
+              )
+          }
+          .buttonStyle(.plain)
+
+        default:
+          EmptyView()
       }
-
-    } else {
-      Button(role: .none) {
-        onTap()
-      } label: {
-        HStack {
-          Spacer()
-          Image(type.image)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 20, height: 20)
-
-          Spacer()
-            .frame(width: 12)
-
-          Text(type.title)
-            .pretendardFont(family: .medium, size: 16)
-            .foregroundStyle(type.textColor)
-
-          Spacer()
-        }
-        .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity, minHeight: 56)
-        .background(type.color)
-        .cornerRadius(12)
-        .overlay(
-          RoundedRectangle(cornerRadius: 12)
-            .stroke(Color.gray.opacity(type.hasBorder ? 0.25 : 0),
-                    lineWidth: type.hasBorder ? 2 : 0)
-        )
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
-      }
-      .buttonStyle(.plain)
-      .contentShape(RoundedRectangle(cornerRadius: 12))
     }
   }
 
   @ViewBuilder
-  func SocialLoginErrorPopup(message: String = "소셜 로그인에 인증에 실패하셨습니다.") -> some View {
-    PopupCard {
-      VStack(alignment: .leading, spacing: 10) {
-        HStack(spacing: 8) {
-          Image(systemName: "exclamationmark.triangle.fill")
-            .font(.pretendardFont(family: .semiBold, size: 22))
-            .foregroundColor(.red)
-            .frame(width: 24, height: 24)
+  private func authFooter() -> some View {
+    VStack {
+      HStack {
+        Text("아직 회원이 아니신가요?")
+          .font(.pretendardFont(family: .medium, size: 14))
+          .foregroundColor(.secondary)
 
-          Text("로그인 실패")
-            .font(.pretendardFont(family: .semiBold, size: 18))
-            .foregroundColor(.black)
-          Spacer()
-        }
 
-        VStack(alignment: .leading, spacing: 6) {
-          Text(message)
-            .font(.pretendardFont(family: .medium, size: 16))
-            .foregroundColor(.secondary)
-            .multilineTextAlignment(.leading)
-            .fixedSize(horizontal: false, vertical: true)
+        Text("회원가입")
+          .font(.pretendardFont(family: .semiBold, size: 14))
+          .foregroundColor(.basicPurple)
+          .onTapGesture {
 
-          Text(store.authError ?? "")
-            .font(.pretendardFont(family: .medium, size: 14))
-            .foregroundColor(.secondary)
-            .multilineTextAlignment(.leading)
-            .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+          }
       }
-      .padding(.vertical, 10)
-      .padding(.horizontal, 16)
-      .frame(maxWidth: .infinity, alignment: .leading)
     }
+    .padding(.vertical, 8)
   }
 }
 
 #Preview {
   LoginView(
-    store: .init( initialState: LoginReducer.State(), reducer: {
-      LoginReducer()
-      }
-    )
+    store: .init( initialState: LoginReducer.State(userEntity: .shared), reducer: {
+      LoginReducer()}
+                )
   )
 }
 
