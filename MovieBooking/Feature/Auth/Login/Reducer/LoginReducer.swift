@@ -45,7 +45,7 @@ public struct LoginReducer {
       }
     }
   }
-  
+
   @CasePathable
   public enum Action: ViewAction, BindableAction {
     case binding(BindingAction<State>)
@@ -66,8 +66,6 @@ public struct LoginReducer {
     case onAppear
   }
 
-
-
   //MARK: - AsyncAction 비동기 처리 액션
   public enum AsyncAction {
     case prepareAppleRequest(ASAuthorizationAppleIDRequest)
@@ -86,7 +84,7 @@ public struct LoginReducer {
 
   //MARK: - NavigationAction
   public enum NavigationAction: Equatable {
-
+    case presentMain
 
   }
 
@@ -178,12 +176,14 @@ extension LoginReducer {
 
             let user = try await authUseCase.signInWithAppleOnce(credential: credential, nonce: nonce)
             await send(.inner(.setUser(user)))
+            try await clock.sleep(for: .seconds(0.2))
+            await send(.navigation(.presentMain))
 
           } catch {
             await send(.inner(.setAuthError(error.localizedDescription)))
           }
         }
-//        .debounce(id: LoginCancelID.apple, for: 0.1, scheduler: mainQueue)
+        .debounce(id: LoginCancelID.apple, for: 0.1, scheduler: mainQueue)
 
       case .signInWithSocial(let social):
         return .run { send in
@@ -194,12 +194,14 @@ extension LoginReducer {
           switch socialResult {
             case .success(let socialData):
               await send(.inner(.setUser(socialData)))
+              try await clock.sleep(for: .seconds(0.2))
+              await send(.navigation(.presentMain))
 
             case .failure(let error):
               await send(.inner(.setAuthError(error.localizedDescription)))
           }
-      }
-//        .debounce(id: LoginCancelID.social, for: 0.1, scheduler: mainQueue)
+        }
+        .debounce(id: LoginCancelID.social, for: 0.1, scheduler: mainQueue)
 
       case .fetchLastLoginSession:
         return .run {  send in
@@ -209,13 +211,13 @@ extension LoginReducer {
 
           switch sessionResult {
             case .success(let sessionData):
-               await send(.inner(.setSocialType(sessionData)))
+              await send(.inner(.setSocialType(sessionData)))
 
             case .failure(let error):
               #logDebug("세션 정보 가져오기 실패", error.localizedDescription)
           }
         }
-//        .debounce(id: LoginCancelID.session, for: 0.1, scheduler: mainQueue)
+        .debounce(id: LoginCancelID.session, for: 0.1, scheduler: mainQueue)
     }
   }
 
@@ -224,7 +226,8 @@ extension LoginReducer {
     action: NavigationAction
   ) -> Effect<Action> {
     switch action {
-
+      case .presentMain:
+        return .none
     }
   }
 
@@ -248,8 +251,8 @@ extension LoginReducer {
         return .none
 
       case .setSocialType(let type):
-              state.socialType = type
-              return .none
+        state.socialType = type
+        return .none
     }
   }
 }

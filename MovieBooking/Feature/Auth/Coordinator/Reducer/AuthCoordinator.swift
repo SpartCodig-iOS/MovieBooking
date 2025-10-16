@@ -8,6 +8,7 @@
 import Foundation
 import ComposableArchitecture
 import TCACoordinators
+import SwiftUI
 
 @Reducer
 public struct AuthCoordinator {
@@ -26,6 +27,11 @@ public struct AuthCoordinator {
   public enum Action:  BindableAction {
     case binding(BindingAction<State>)
     case router(IndexedRouterActionOf<AuthScreen>)
+    case navigation(NavigationAction)
+  }
+
+  public enum NavigationAction: Equatable {
+    case presentMain
   }
 
 
@@ -38,6 +44,9 @@ public struct AuthCoordinator {
 
         case .router(let routeAction):
           return routerAction(state: &state, action: routeAction)
+
+        case .navigation(let navigationAction):
+          return handleNavigationAction(state: &state, action: navigationAction)
       }
     }
     .forEachRoute(\.routes, action: \.router)
@@ -50,7 +59,20 @@ extension AuthCoordinator {
     action: IndexedRouterActionOf<AuthScreen>
   ) -> Effect<Action> {
     switch action {
+      case .routeAction(id: _, action: .login(.navigation(.presentMain))):
+        return .send(.navigation(.presentMain), animation: .easeIn)
+
       default:
+        return .none
+    }
+  }
+
+  private func handleNavigationAction(
+    state: inout State,
+    action: NavigationAction
+  ) -> Effect<Action> {
+    switch action {
+      case .presentMain:
         return .none
     }
   }
