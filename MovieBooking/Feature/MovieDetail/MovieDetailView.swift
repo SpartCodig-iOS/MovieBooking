@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct MovieDetailView: View {
+    let posterPath: String
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+      ScrollView {
+        VStack(spacing: 24) {
+          MoviePosterView(posterPath: posterPath)
+
+          MovieDetailCardView(model: .mockData)
+            .padding(.horizontal, 24)
+        }
+      }
     }
 }
 
 #Preview {
-    MovieDetailView()
+  MovieDetailView(posterPath: "/bUrReoZFLGti6ehkBW0xw8f12MT.jpg")
 }
