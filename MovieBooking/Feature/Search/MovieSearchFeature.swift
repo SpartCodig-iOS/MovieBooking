@@ -47,15 +47,7 @@ extension MovieSearchFeature.State {
   }
 
   var aggregatedMovies: [Movie] {
-    let combined = nowPlayingMovies + upcomingMovies + popularMovies
-    var unique: [Movie] = []
-    var seenIDs = Set<Int>()
-
-    for movie in combined where seenIDs.insert(movie.id).inserted {
-      unique.append(movie)
-    }
-
-    return unique
+    Array(Set(nowPlayingMovies + upcomingMovies + popularMovies))
   }
 
   var filteredMovies: [Movie] {
