@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct MoviePosterView: View {
-  let posterPath: String
+  private let posterPath: String
+  
+  init(posterPath: String) {
+    self.posterPath = posterPath
+  }
 
   var body: some View {
     AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)")) { phase in

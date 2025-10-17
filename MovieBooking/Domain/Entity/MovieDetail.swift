@@ -45,7 +45,7 @@ extension MovieDetail {
     releaseDate: "1994-9-23.",
     runningTime: 142 * 60,
     rating: 8.7,
-    posterPath: nil,
+    posterPath: "/bUrReoZFLGti6ehkBW0xw8f12MT.jpg",
     summary: "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency."
   )
 }

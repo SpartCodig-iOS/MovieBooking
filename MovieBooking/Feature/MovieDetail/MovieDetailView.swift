@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct MovieDetailView: View {
-    let posterPath: String
-
-    var body: some View {
-      ScrollView {
-        VStack(spacing: 24) {
-          MoviePosterView(posterPath: posterPath)
-
-          MovieDetailCardView(model: .mockData)
-            .padding(.horizontal, 24)
+  var body: some View {
+    ScrollView {
+      VStack(spacing: 24) {
+        if let path = MovieDetail.mockData.posterPath {
+          MoviePosterView(posterPath: path)
         }
+        
+        MovieDetailCardView(model: .mockData)
+          .padding(.horizontal, 24)
       }
     }
+  }
 }
 
 #Preview {
-  MovieDetailView(posterPath: "/bUrReoZFLGti6ehkBW0xw8f12MT.jpg")
+  MovieDetailView()
 }
