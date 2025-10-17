@@ -9,6 +9,7 @@ import Foundation
 
 protocol MovieDataSource {
     func movieDetail(_ id: String) async throws -> MovieDetailResponseDTO
+    func movieList(category: MovieCategory, page: Int) async throws -> MovieListResponseDTO
 }
 
 struct DefaultMovieDataSource: MovieDataSource {
@@ -23,10 +24,13 @@ struct DefaultMovieDataSource: MovieDataSource {
     ) async throws -> MovieDetailResponseDTO {
         try await provider.request(MovieTarget.movieDetail(id: id))
     }
-}
 
-enum MovieTarget {
-    case movieDetail(id: String)
+  func movieList(
+      category: MovieCategory,
+      page: Int = 1
+  ) async throws -> MovieListResponseDTO {
+      try await provider.request(MovieTarget.movieList(category: category, page: page))
+  }
 }
 
 extension MovieTarget: TargetType {
@@ -38,12 +42,16 @@ extension MovieTarget: TargetType {
         switch self {
         case .movieDetail(let id):
             return "/\(id)"
+        case .movieList(let category, _):
+            return "/\(category.rawValue)"
         }
     }
     
     var method: HTTPMethod {
         switch self {
         case .movieDetail:
+            return .get
+        case .movieList:
             return .get
         }
     }
@@ -52,6 +60,9 @@ extension MovieTarget: TargetType {
         switch self {
         case .movieDetail:
             return nil
+
+        case .movieList(_ , let page):
+          return .query(["page": page])
         }
     }
     
