@@ -17,7 +17,7 @@ protocol MovieRepositoryProtocol {
 
 private enum MovieRepositoryKey: DependencyKey {
   static let liveValue: any MovieRepositoryProtocol = MovieRepository()
-  static let previewValue: any MovieRepositoryProtocol = MockMovieRepository()
+  static let previewValue: any MovieRepositoryProtocol = MovieRepository()
   static let testValue: any MovieRepositoryProtocol = MockMovieRepository()
 }
 

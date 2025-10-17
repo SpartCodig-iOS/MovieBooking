@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MovieDataSource {
-    func movieDetail(_ id: String) async throws -> MovieDetailResponseDTO
+    func movieDetail(_ id: String, _ request: MovieDetailRequestDTO) async throws -> MovieDetailResponseDTO
     func movieList(category: MovieCategory, page: Int) async throws -> MovieListResponseDTO
 }
 
@@ -20,9 +20,10 @@ struct DefaultMovieDataSource: MovieDataSource {
     }
     
     func movieDetail(
-        _ id: String
+        _ id: String,
+        _ request: MovieDetailRequestDTO = MovieDetailRequestDTO()
     ) async throws -> MovieDetailResponseDTO {
-        try await provider.request(MovieTarget.movieDetail(id: id))
+        try await provider.request(MovieTarget.movieDetail(id: id, request: request))
     }
 
   func movieList(
@@ -40,7 +41,7 @@ extension MovieTarget: TargetType {
     
     var path: String {
         switch self {
-        case .movieDetail(let id):
+        case .movieDetail(let id, _):
             return "/\(id)"
         case .movieList(let category, _):
             return "/\(category.rawValue)"
@@ -58,8 +59,8 @@ extension MovieTarget: TargetType {
     
     var parameters: RequestParameter? {
         switch self {
-        case .movieDetail:
-            return nil
+        case .movieDetail(_, let request):
+          return .query(request)
 
         case .movieList(_ , let page):
           return .query(["page": page])

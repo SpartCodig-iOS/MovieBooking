@@ -16,13 +16,13 @@ struct FetchMovieDetailUseCase: FetchMovieDetailUseCaseProtocol {
   @Dependency(\.movieRepository) var repository: MovieRepositoryProtocol
   
   func execute(_ id: String) async throws -> MovieDetail {
-    return MovieDetail.mockData
+    try await repository.fetchMovieDetail(id: id)
   }
 }
 
 private enum FetchMovieDetailUseCaseKey: DependencyKey {
   static let liveValue: any FetchMovieDetailUseCaseProtocol = FetchMovieDetailUseCase()
-  static let previewValue: any FetchMovieDetailUseCaseProtocol = MockFetchMovieDetailUseCase()
+  static let previewValue: any FetchMovieDetailUseCaseProtocol = FetchMovieDetailUseCase()
   static let testValue: any FetchMovieDetailUseCaseProtocol = MockFetchMovieDetailUseCase()
 }
 

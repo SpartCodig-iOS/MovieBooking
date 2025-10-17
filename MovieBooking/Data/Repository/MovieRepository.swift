@@ -32,6 +32,6 @@ struct MovieRepository: MovieRepositoryProtocol {
   }
   
   func fetchMovieDetail(id: String) async throws -> MovieDetail {
-    try await dataSource.movieDetail(id).toDomain()
+    try await dataSource.movieDetail(id, MovieDetailRequestDTO()).toDomain()
   }
 }

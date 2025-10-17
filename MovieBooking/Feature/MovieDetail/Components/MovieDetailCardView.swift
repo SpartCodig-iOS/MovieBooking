@@ -48,12 +48,11 @@ struct MovieDetailCardView: View {
           .frame(maxWidth: .infinity)
           .font(.system(size: 16, weight: .bold))
           .foregroundStyle(.white)
-          .background(.basicPurple)
           .padding(.vertical, 16)
+          .background(.basicPurple)
           .clipShape(Capsule())
           .shadow(color: .black.opacity(0.2), radius: 5, y: 5)
       }
-
     }
     .padding(24)
     .background(Color.white)
