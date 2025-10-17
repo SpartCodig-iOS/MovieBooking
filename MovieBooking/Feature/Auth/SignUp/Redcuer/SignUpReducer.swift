@@ -35,6 +35,9 @@ public struct SignUpReducer {
      var passwordError: String? = nil
      var checkPasswordError: String? = nil
 
+    var showAlert: Bool = false
+    var isSuccessSignUp: Bool = false
+
     var isEnable: Bool {
       !userEmail.isEmpty && !userName.isEmpty  && !userPassword.isEmpty && userPassword == checkPassword
     }
@@ -56,12 +59,11 @@ public struct SignUpReducer {
   //MARK: - ViewAction
   @CasePathable
   public enum View {
-
+    case appearAlert(Bool)
+    case closeAlert
+    case setSuccessSignUp(Bool)
   }
 
-  nonisolated enum SignUpCancelID: Hashable, Sendable {
-    case auth
-  }
 
   //MARK: - AsyncAction 비동기 처리 액션
   public enum AsyncAction: Equatable {
@@ -79,6 +81,10 @@ public struct SignUpReducer {
     case backToLogin
     case presentMain
 
+  }
+
+  nonisolated enum SignUpCancelID: Hashable, Sendable {
+    case auth
   }
 
   @Injected(AuthUseCaseImpl.self) var authUseCase
@@ -114,7 +120,19 @@ extension SignUpReducer {
     action: View
   ) -> Effect<Action> {
     switch action {
-        
+      case .appearAlert(let bool):
+        state.showAlert = bool
+        state.authError = "회원가입에 성공했습니다."
+        state.authErrorMesage = "메인 화면으로 이동합니다.\n(아이디는 이메일이랑 이메일 @앞부터 나오는 부분을 사용하시면 됩니다)"
+        return .none
+
+      case .closeAlert:
+        state.showAlert = false
+        return .none
+
+      case .setSuccessSignUp(let bool):
+        state.isSuccessSignUp = bool
+        return .none
     }
   }
 
@@ -138,8 +156,10 @@ extension SignUpReducer {
             case .success(let userData):
               await send(.inner(.setUser(userData)))
 
+              await send(.view(.setSuccessSignUp(true)))
+
               try await clock.sleep(for: .seconds(0.2))
-              await send(.navigation(.presentMain), animation: .easeIn)
+              await send(.view(.appearAlert(true)))
 
             case .failure(let error):
               await send(.inner(.setAuthError("회원가입 에 실패했습니다. \(error.localizedDescription)")))
@@ -189,7 +209,9 @@ extension SignUpReducer.State: Hashable {
     lhs.userNameError == rhs.userNameError &&
     lhs.userEmailError == rhs.userEmailError &&
     lhs.passwordError == rhs.passwordError &&
-    lhs.checkPasswordError == rhs.checkPasswordError
+    lhs.checkPasswordError == rhs.checkPasswordError &&
+    lhs.showAlert == rhs.showAlert &&
+    lhs.isSuccessSignUp == rhs.isSuccessSignUp
   }
   public func hash(into hasher: inout Hasher) {
     hasher.combine(userEmail)
@@ -202,5 +224,7 @@ extension SignUpReducer.State: Hashable {
     hasher.combine(userEmailError)
     hasher.combine(passwordError)
     hasher.combine(checkPasswordError)
+    hasher.combine(showAlert)
+    hasher.combine(isSuccessSignUp)
   }
 }

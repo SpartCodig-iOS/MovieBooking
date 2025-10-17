@@ -68,16 +68,6 @@ struct LoginView: View {
         }
       }
     }
-    .onOpenURL { url in
-      Task {
-        do {
-          try await supabase.auth.session(from: url)  // 또는 supabase.auth.handle(url)
-          // 여기서 SIGNED_IN 이벤트가 옵니다.
-        } catch {
-          print("session(from:) error:", error)
-        }
-      }
-    }
   }
 
 }

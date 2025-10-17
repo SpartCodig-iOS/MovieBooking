@@ -10,6 +10,7 @@ import ComposableArchitecture
 internal import Auth
 import Supabase
 
+@ViewAction(for: SignUpReducer.self)
 struct SignUpView: View {
   @Perception.Bindable var store: StoreOf<SignUpReducer>
   @FocusState private var focus: SignUpReducer.State.FocusedField?
@@ -49,8 +50,21 @@ struct SignUpView: View {
 
         }
       }
-      .padding(.horizontal, 24)
+      .customAlert(
+        isPresented: store.showAlert,
+        title: store.authError ?? "",
+        message: store.authErrorMesage ?? "",
+        isUseConfirmButton: false,
+        onConfirm: {
+          send(.closeAlert)
+          store.send(.navigation(.presentMain), animation: .easeIn)
+        },
+        onCancel: {
+          send(.closeAlert)
+        }
+      )
     }
+    .padding(.horizontal, 24)
   }
 }
 
