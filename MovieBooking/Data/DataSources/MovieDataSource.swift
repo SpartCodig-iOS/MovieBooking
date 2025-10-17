@@ -33,18 +33,6 @@ struct DefaultMovieDataSource: MovieDataSource {
   }
 }
 
-enum MovieTarget {
-    case movieDetail(id: String)
-    case movieList(category: MovieCategory, page: Int = 1)
-}
-
-enum MovieCategory: String {
-    case popular
-    case nowPlaying = "now_playing"
-    case topRated = "top_rated"
-    case upcoming
-}
-
 extension MovieTarget: TargetType {
     var baseURL: String {
         return APIConfiguration.baseURL
