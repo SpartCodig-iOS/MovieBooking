@@ -20,4 +20,8 @@ struct MockMovieRepository: MovieRepositoryProtocol {
     try await Task.sleep(for: .seconds(1))
     return Movie.mockData
   }
+  
+  func fetchMovieDetail(id: String) async throws -> MovieDetail {
+    return MovieDetail.mockData
+  }
 }

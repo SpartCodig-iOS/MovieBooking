@@ -30,4 +30,8 @@ struct MovieRepository: MovieRepositoryProtocol {
   func fetchPopularMovies() async throws -> [Movie] {
     try await fetchMovies(for: .popular)
   }
+  
+  func fetchMovieDetail(id: String) async throws -> MovieDetail {
+    try await dataSource.movieDetail(id).toDomain()
+  }
 }
