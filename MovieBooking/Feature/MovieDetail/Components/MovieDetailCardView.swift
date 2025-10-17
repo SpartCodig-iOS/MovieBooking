@@ -16,16 +16,17 @@ struct MovieDetailCardView: View {
   
   var body: some View {
     VStack(alignment: .leading, spacing: 24) {
-      GenreLabel(genre: Genre(id: 0, name: "Drama"))
-      
+      // 장르 라벨들을 가로로 나열
+      genreLabelsView
+
       VStack(alignment: .leading, spacing: 12) {
         titleView
-        
-        StarRatingView(rating: model.rating)
-        
+
+        DetailStarRatingView(rating: model.rating)
+
         HStack(spacing: 24) {
           ReleaseDateView(date: model.releaseDate)
-          
+
           RunningTimeView(model.runningTime)
         }
       }
@@ -62,6 +63,17 @@ struct MovieDetailCardView: View {
 }
 
 extension MovieDetailCardView {
+  // 장르 라벨들
+  var genreLabelsView: some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+      HStack(spacing: 8) {
+        ForEach(model.genres, id: \.id) { genre in
+          GenreLabel(genre: genre)
+        }
+      }
+    }
+  }
+
   // 영화 제목
   var titleView: some View {
     Text(model.title)
