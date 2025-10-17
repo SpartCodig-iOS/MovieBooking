@@ -7,39 +7,45 @@
 
 import SwiftUI
 import ComposableArchitecture
+import Supabase
 
-@ViewAction(for: Splash.self)
-struct SplashView: View {
-  @State var store: StoreOf<Splash>
 
-  var body: some View {
-    ZStack {
-      LinearGradient(
-        gradient: Gradient(colors: [
-          .white,
-          .white,
-          .basicPurple.opacity(0.05)
-        ]),
-        startPoint: .top,
-        endPoint: .bottom
-      )
-      .ignoresSafeArea()
+@ViewAction(for: SplashFeature.self)
+public struct SplashView: View {
+  @Perception.Bindable public var store: StoreOf<SplashFeature>
 
-      VStack(spacing: 24) {
+  public  var body: some View {
+    WithPerceptionTracking {
+      ZStack {
+        LinearGradient(
+          gradient: Gradient(colors: [
+            .white,
+            .white,
+            .basicPurple.opacity(0.05)
+          ]),
+          startPoint: .top,
+          endPoint: .bottom
+        )
+        .ignoresSafeArea()
 
-        splashLogo()
+        VStack(spacing: 24) {
 
-        titleView()
-      }
-      .scaleEffect(store.fadeOut ? 0.95 : 1.0)
-      .opacity(store.fadeOut ? 0.0 : 1.0)
-      .animation(.easeInOut(duration: 1), value: store.fadeOut)
-      .onAppear {
-        send(.onAppear)
+          splashLogo()
+
+          titleView()
+        }
+        .scaleEffect(store.fadeOut ? 0.95 : 1.0)
+        .opacity(store.fadeOut ? 0.0 : 1.0)
+        .animation(.easeInOut(duration: 1), value: store.fadeOut)
+        .onAppear {
+          send(.onAppear)
+
+        }
       }
     }
   }
 }
+
 
 
 extension SplashView {
@@ -48,7 +54,7 @@ extension SplashView {
   fileprivate func splashLogo() -> some View {
     ZStack {
       Circle()
-        .fill(.basicPurple.opacity(0.20))
+        .fill(.basicPurple.opacity(0.4))
         .blur(radius: 24)
         .scaleEffect(store.pulse ? 1.08 : 0.95)
         .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true), value: store.pulse)
@@ -77,7 +83,7 @@ extension SplashView {
   @ViewBuilder
   fileprivate func titleView() -> some View {
     VStack(spacing: 6) {
-      Text("MEGABOX")
+      Text("TicketSwift")
         .font(.pretendardFont(family: .semiBold, size: 32))
         .foregroundColor(.primary)
 
@@ -90,7 +96,10 @@ extension SplashView {
 
 
 #Preview {
-  SplashView(store: .init(initialState: Splash.State(), reducer: {
-    Splash()
+  SplashView(store: .init(initialState: SplashFeature.State(), reducer: {
+    SplashFeature()
   }))
 }
+
+
+

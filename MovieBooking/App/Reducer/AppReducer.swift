@@ -6,14 +6,16 @@
 //
 
 import ComposableArchitecture
+import SwiftUI
 
 @Reducer
 struct AppReducer {
 
   @ObservableState
   enum State {
-    case splash(Splash.State)
+    case splash(SplashFeature.State)
     case auth(AuthCoordinator.State)
+    case mainTab(MainTabReducer.State)
 
 
 
@@ -36,8 +38,9 @@ struct AppReducer {
 
   @CasePathable
   enum ScopeAction {
-    case splash(Splash.Action)
+    case splash(SplashFeature.Action)
     case auth(AuthCoordinator.Action)
+    case mainTab(MainTabReducer.Action)
   }
 
   @Dependency(\.continuousClock) var clock
@@ -53,10 +56,13 @@ struct AppReducer {
       }
     }
     .ifCaseLet(\.splash, action: \.scope.splash) {
-      Splash()
+      SplashFeature()
     }
     .ifCaseLet(\.auth, action: \.scope.auth) {
       AuthCoordinator()
+    }
+    .ifCaseLet(\.mainTab, action: \.scope.mainTab) {
+      MainTabReducer()
     }
   }
 }
@@ -73,6 +79,7 @@ extension AppReducer {
       return .none
 
     case .presentMain:
+        state = .mainTab(.init())
       return .none
 
     }
@@ -97,12 +104,8 @@ extension AppReducer {
       }
 
 
-//    case .auth(.navigation(.presentMain)):
-//      return .send(.view(.presentMain))
-//
-//    case .auth(.navigation(.presentMain)):
-//      return .send(.view(.presentMain))
-
+    case .auth(.navigation(.presentMain)):
+      return .send(.view(.presentMain),  animation: .easeIn)
 
     default:
       return .none

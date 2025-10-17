@@ -14,7 +14,9 @@ extension WeaveDI.Container {
   ///  Repository 등록
   static func registerRepositories() async {
     let repositories: [Module] = [
-      
+      helper.authRepositoryModule(),
+      helper.oAuthRepositoryModule(),
+      helper.sessionRepositoryModule()
     ]
 
     await repositories.asyncForEach { module in
@@ -26,7 +28,9 @@ extension WeaveDI.Container {
   static func registerUseCases() async {
 
     let useCases: [Module] = [
-
+      helper.sessionUseCaseModule(),
+      helper.authUseCaseModule(),
+      helper.oAuthUseCaseModule()
     ]
 
     await useCases.asyncForEach { module in

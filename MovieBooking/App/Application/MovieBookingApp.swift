@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Supabase
 import ComposableArchitecture
 
 @main
@@ -16,15 +17,20 @@ struct MovieBookingApp: App {
 
   }
 
-    var body: some Scene {
-        WindowGroup {
-          let store = Store(initialState: AppReducer.State()) {
-            AppReducer()
-              ._printChanges()
-              ._printChanges(.actionLabels)
-          }
+  var body: some Scene {
+    WindowGroup {
+      let store = Store(initialState: AppReducer.State()) {
+        AppReducer()
+          ._printChanges()
+          ._printChanges(.actionLabels)
+      }
 
-          AppView(store: store)
+      AppView(store: store)
+        .onOpenURL { url in
+          Task {
+            try await SuperBaseManger.shared.client.auth.session(from: url)
+          }
         }
     }
+  }
 }

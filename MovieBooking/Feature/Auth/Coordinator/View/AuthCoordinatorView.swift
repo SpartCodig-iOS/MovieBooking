@@ -18,15 +18,19 @@ public struct AuthCoordinatorView: View {
   ) {
     self.store = store
   }
-
-  public var body: some View {
+  
+  var body: some View {
     TCARouter(store.scope(state: \.routes, action: \.router)) { screens in
       switch screens.case {
-      case .login(let loginStore):
-        LoginView(store: loginStore)
-          .navigationBarBackButtonHidden()
-
-    
+        case .login(let loginStore):
+          LoginView(store: loginStore)
+            .navigationBarBackButtonHidden()
+          
+        case .signUp(let signUpStore):
+          SignUpView(store: signUpStore)
+            .navigationBarBackButtonHidden()
+          
+          
       }
     }
   }
