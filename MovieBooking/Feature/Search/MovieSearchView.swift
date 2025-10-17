@@ -6,20 +6,42 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct MovieSearchView: View {
-  @State private var searchText = ""
+  @Perception.Bindable var store: StoreOf<MovieSearchFeature>
 
   var body: some View {
-    VStack(spacing: 20) {
-      SearchBar(text: $searchText)
+    WithPerceptionTracking {
+      VStack(spacing: 0) {
+        SearchBar(text: $store.searchText)
+          .padding(.bottom, 20)
 
-      SearchView(movies: Movie.mockData)
+        Group {
+          if store.trimmedKeyword.isEmpty {
+            EmptySearchView()
+          } else {
+            SearchView(movies: store.filteredMovies)
+          }
+        }
+        .frame(maxHeight: .infinity)
+      }
+      .padding(.top, 20)
+      .padding(.horizontal, 20)
     }
-    .padding(.horizontal, 20)
   }
 }
 
 #Preview {
-  MovieSearchView()
+  MovieSearchView(
+    store: Store(
+      initialState: MovieSearchFeature.State(
+        nowPlayingMovies: Movie.mockData,
+        upcomingMovies: Movie.mockData,
+        popularMovies: Movie.mockData
+      )
+    ) {
+      MovieSearchFeature()
+    }
+  )
 }
