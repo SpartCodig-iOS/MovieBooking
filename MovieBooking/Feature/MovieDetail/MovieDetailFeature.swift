@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+internal import SwiftUICore
 
 @Reducer
 struct MovieDetailFeature {
@@ -17,12 +18,14 @@ struct MovieDetailFeature {
     let movieId: Int
     var movieDetail: MovieDetail?
     var isLoading: Bool = false
+    @Presents var alert: AlertState<Action.Alert>?
   }
 
   enum Action: ViewAction {
     case view(ViewAction)
     case async(AsyncAction)
     case inner(InnerAction)
+    case alert(PresentationAction<Alert>)
 
     enum ViewAction {
       case onAppear
@@ -35,6 +38,10 @@ struct MovieDetailFeature {
     enum InnerAction {
       case fetchSuccess(MovieDetail)
       case fetchFailure(Error)
+    }
+
+    enum Alert {
+      case confirmDismiss
     }
   }
   
@@ -49,6 +56,12 @@ struct MovieDetailFeature {
 
       case .inner(let innerAction):
         return handleInnerAction(state: &state, action: innerAction)
+
+      case .alert(.presented(let alertAction)):
+        return handleAlertAction(state: &state, action: alertAction)
+
+      case .alert(.dismiss):
+        return .none
       }
     }
   }
@@ -96,7 +109,33 @@ extension MovieDetailFeature {
 
     case .fetchFailure(let error):
       state.isLoading = false
+
+      let movieDetailError = error as? MovieDetailError ?? MovieDetailError(from: error)
+      let title = movieDetailError.title
+      let message = movieDetailError.errorDescription ?? "오류가 발생했습니다"
+
+      state.alert = AlertState {
+        TextState(title)
+      } actions: {
+        ButtonState(action: .confirmDismiss) {
+          TextState("확인")
+        }
+      } message: {
+        TextState(message)
+      }
+
       return .none
     }
   }
+  
+  private func handleAlertAction(
+      state: inout State,
+      action: Action.Alert
+    ) -> Effect<Action> {
+      switch action {
+      case .confirmDismiss:
+        // TODO: 뒤로가기 액션 (DismissEffect 등)
+        return .none
+      }
+    }
 }

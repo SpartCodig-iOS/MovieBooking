@@ -14,9 +14,13 @@ protocol FetchMovieDetailUseCaseProtocol {
 
 struct FetchMovieDetailUseCase: FetchMovieDetailUseCaseProtocol {
   @Dependency(\.movieRepository) var repository: MovieRepositoryProtocol
-  
+
   func execute(_ id: String) async throws -> MovieDetail {
-    try await repository.fetchMovieDetail(id: id)
+    do {
+      return try await repository.fetchMovieDetail(id: id)
+    } catch {
+      throw MovieDetailError(from: error)
+    }
   }
 }
 

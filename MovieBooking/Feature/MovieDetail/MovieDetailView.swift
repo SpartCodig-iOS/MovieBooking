@@ -35,6 +35,7 @@ struct MovieDetailView: View {
     .onAppear {
       send(.onAppear)
     }
+    .alert($store.scope(state: \.alert, action: \.alert))
   }
 }
 
