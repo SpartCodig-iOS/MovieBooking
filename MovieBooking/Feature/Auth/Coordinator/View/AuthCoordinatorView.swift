@@ -10,10 +10,10 @@ import SwiftUI
 import ComposableArchitecture
 import TCACoordinators
 
-struct AuthCoordinatorView: View {
+public struct AuthCoordinatorView: View {
   @Perception.Bindable private var store: StoreOf<AuthCoordinator>
-  
-  init(
+
+  public init(
     store: StoreOf<AuthCoordinator>
   ) {
     self.store = store
