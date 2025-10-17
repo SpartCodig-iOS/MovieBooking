@@ -10,13 +10,6 @@ import AuthenticationServices
 import Supabase
 
 public protocol AuthInterface: Sendable {
-  func idToken(from credential: ASAuthorizationAppleIDCredential) throws -> String
-  func signInWithApple(idToken: String, nonce: String) async throws -> Session
-  func updateDisplayName(_ name: String) async throws
-  func currentSession() async throws -> UserEntity
-  func signInWithAppleOnce(credential: ASAuthorizationAppleIDCredential, nonce: String) async throws -> UserEntity
-  func signInWithSocial(type: SocialType) async throws -> UserEntity
-  func fetchCurrentSocialType() async throws -> SocialType?
   func signUpNormalUser(
     name: String,
     email: String,
@@ -31,7 +24,7 @@ public protocol AuthInterface: Sendable {
   func checkUserExists(userId: UUID) async throws -> Bool
   func isTokenExpiringSoon(_ session: Session, threshold: TimeInterval) async throws -> Bool
   func sessionLogOut() async throws
+  func refreshSession() async throws -> UserEntity
 }
-
 
 

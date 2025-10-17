@@ -18,46 +18,6 @@ public struct AuthUseCaseImpl: AuthInterface {
     self.repository = repository
   }
 
-  public func idToken(
-    from credential: ASAuthorizationAppleIDCredential
-  ) throws -> String {
-    return try repository.idToken(from: credential)
-  }
-  
-  public func signInWithApple(
-    idToken: String,
-    nonce: String
-  ) async throws -> Auth.Session {
-   return try await repository.signInWithApple(idToken: idToken, nonce: nonce)
-  }
-  
-  public func updateDisplayName(
-    _ name: String
-  ) async throws {
-    return try await repository.updateDisplayName(name)
-  }
-  
-  public func currentSession() async throws -> UserEntity {
-    return try await repository.currentSession()
-  }
-  
-  public func signInWithAppleOnce(
-    credential: ASAuthorizationAppleIDCredential,
-    nonce: String
-  ) async throws -> UserEntity {
-    return try await repository.signInWithAppleOnce(credential: credential, nonce: nonce)
-  }
-
-  public func signInWithSocial(
-    type: SocialType
-  ) async throws -> UserEntity {
-    return try await repository.signInWithSocial(type: type)
-  }
-
-  public func fetchCurrentSocialType() async throws -> SocialType? {
-    return try await repository.fetchCurrentSocialType()
-  }
-
   public func signUpNormalUser(
     name: String,
     email: String,
@@ -105,6 +65,10 @@ public struct AuthUseCaseImpl: AuthInterface {
 
   public func sessionLogOut() async throws {
     return try await repository.sessionLogOut()
+  }
+
+  public func refreshSession() async throws -> UserEntity {
+    return try await repository.refreshSession()
   }
 }
 

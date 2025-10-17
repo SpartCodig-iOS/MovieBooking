@@ -52,7 +52,7 @@ public struct SplashReducer {
   public enum AsyncAction: Equatable {
     case checkSession
     case runAuthCheck
-    case sessionLogOut
+    case refreshSession
   }
 
   //MARK: - 앱내에서 사용하는 액션
@@ -148,13 +148,13 @@ extension SplashReducer {
           if let session = superbase.auth.currentSession {
             if try await authUseCase.isTokenExpiringSoon(session, threshold: 60) {
               #logDebug("토근 만료 입박 ")
-              await send(.async(.sessionLogOut))
+              await send(.async(.refreshSession))
             } else {
               #logDebug("토큰 아직 유효 ")
             }
           }
 
-          if let user = try?  await authUseCase.currentSession() {
+          if let user = try?  await authUseCase.checkSession() {
             let uuid = UUID(uuidString: user.id)!
             let exists = try? await authUseCase.checkUserExists(userId: uuid)
             #logDebug(exists == true ? "✅ 메인으로 이동" : "⚠️ 프로필 등록 필요")
@@ -167,10 +167,20 @@ extension SplashReducer {
         }
 
 
-      case .sessionLogOut:
+      case .refreshSession:
         return .run { send in
-          try await authUseCase.sessionLogOut()
-          await send(.navigation(.presentLogin))
+          let sessionResult = await Result {
+            try await authUseCase.refreshSession()
+          }
+
+          switch sessionResult {
+            case .success(let userData):
+              await send(.inner(.setUser(userData)))
+
+            case .failure(let error):
+              #logDebug("세션 확인 불가", error.localizedDescription)
+              await send(.navigation(.presentLogin))
+          }
         }
     }
   }

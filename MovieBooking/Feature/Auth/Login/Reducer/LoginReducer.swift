@@ -102,7 +102,9 @@ public struct LoginReducer {
     case normal
   }
 
+  @Injected(OAuthUseCaseImpl.self) var oAuthUseCase
   @Injected(AuthUseCaseImpl.self) var authUseCase
+
   @Dependency(\.continuousClock) var clock
   @Dependency(\.mainQueue) var mainQueue
 
@@ -181,7 +183,7 @@ extension LoginReducer {
               return
             }
 
-            let user = try await authUseCase.signInWithAppleOnce(credential: credential, nonce: nonce)
+            let user = try await oAuthUseCase.signInWithAppleOnce(credential: credential, nonce: nonce)
             await send(.inner(.setUser(user)))
             try await clock.sleep(for: .seconds(0.2))
             await send(.navigation(.presentMain), animation: .easeIn)
@@ -195,7 +197,7 @@ extension LoginReducer {
       case .signInWithSocial(let social):
         return .run { send in
           let socialResult = await Result {
-            try await authUseCase.signInWithSocial(type: social)
+            try await oAuthUseCase.signInWithSocial(type: social)
           }
 
           switch socialResult {
@@ -214,7 +216,7 @@ extension LoginReducer {
       case .fetchLastLoginSession:
         return .run {  send in
           let sessionResult = await Result {
-            try await authUseCase.fetchCurrentSocialType()
+            try await oAuthUseCase.fetchCurrentSocialType()
           }
 
           switch sessionResult {
