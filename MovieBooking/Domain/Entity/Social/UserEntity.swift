@@ -9,7 +9,6 @@ import Foundation
 
 
 public struct UserEntity: Equatable, Identifiable, Hashable {
-  public static let shared = UserEntity()
 
   public let id: String
   public var userId: String

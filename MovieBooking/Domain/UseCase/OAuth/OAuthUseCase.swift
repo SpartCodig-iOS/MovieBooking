@@ -79,12 +79,10 @@ public struct OAuthUseCase: OAuthUseCaseProtocol {
 
 extension OAuthUseCase: DependencyKey {
   public static var liveValue: OAuthUseCaseProtocol = {
-    let repository = UnifiedDI.register(OAuthRepositoryProtocol.self) {
-      OAuthRepository()
-    }
-    let sessionUseCase = UnifiedDI.register(SessionUseCaseProtocol.self) {
-      SessionUseCase.liveValue as! SessionUseCase
-    }
+    let repository = UnifiedDI.resolve(OAuthRepositoryProtocol.self) ?? OAuthRepository()
+    let sessionRepository = UnifiedDI.resolve(SessionRepositoryProtocol.self) ?? SessionRepository()
+    let sessionUseCase = UnifiedDI.resolve(SessionUseCaseProtocol.self)
+      ?? SessionUseCase(repository: sessionRepository)
     return OAuthUseCase(repository: repository, sessionUseCase: sessionUseCase)
   }()
 }
@@ -106,7 +104,11 @@ extension RegisterModule {
       repositoryProtocol: OAuthRepositoryProtocol.self,
       repositoryFallback: MockOAuthRepository(),
       factory: { repo in
-        let sessionUseCase = UnifiedDI.resolve(SessionUseCaseProtocol.self) ?? SessionUseCase.liveValue
+        let sessionUseCase = UnifiedDI.resolve(SessionUseCaseProtocol.self)
+          ?? SessionUseCase(
+            repository: UnifiedDI.resolve(SessionRepositoryProtocol.self)
+              ?? SessionRepository()
+          )
         return OAuthUseCase(repository: repo, sessionUseCase: sessionUseCase)
       }
     )

@@ -9,7 +9,7 @@ import Foundation
 
 import Supabase
 
-public actor SuperBaseManger {
+public class SuperBaseManger {
 
   static let shared = SuperBaseManger()
 
