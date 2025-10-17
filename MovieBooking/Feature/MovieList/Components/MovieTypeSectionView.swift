@@ -8,10 +8,17 @@
 import SwiftUI
 
 struct MovieTypeSectionView: View {
-  let cardCount: Int
-  let headerText: String
-  let movies: [Movie]
+  private let cardCount: Int
+  private let headerText: String
+  private let movies: [Movie]
   @State private var currentIndex: Int = 0
+
+  init(cardCount: Int, headerText: String, movies: [Movie], currentIndex: Int = 0) {
+    self.cardCount = cardCount
+    self.headerText = headerText
+    self.movies = movies
+    self.currentIndex = currentIndex
+  }
 
   var body: some View {
     VStack(spacing: 10) {

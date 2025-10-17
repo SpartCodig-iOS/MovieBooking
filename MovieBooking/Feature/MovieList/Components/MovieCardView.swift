@@ -8,9 +8,15 @@
 import SwiftUI
 
 struct MovieCardView: View {
-  let movieTitle: String
-  let movieRating: Int
-  let posterPath: String?
+  private let movieTitle: String
+  private let movieRating: Int
+  private let posterPath: String?
+
+  init(movieTitle: String, movieRating: Int, posterPath: String?) {
+    self.movieTitle = movieTitle
+    self.movieRating = movieRating
+    self.posterPath = posterPath
+  }
 
   private var imageURL: URL? {
     guard let path = posterPath else { return nil }
