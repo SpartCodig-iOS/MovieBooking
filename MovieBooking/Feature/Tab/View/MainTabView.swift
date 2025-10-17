@@ -26,7 +26,7 @@ struct MainTabView: View {
           .tabItem { Label("티켓", systemImage: "qrcode") }
           .tag(MainTab.tickets)
 
-        ContentView()
+        MyPageView(store: self.store.scope(state: \.myPage, action: \.scope.myPage))
           .tabItem { Label("마이", systemImage: "person") }
           .tag(MainTab.my)
 

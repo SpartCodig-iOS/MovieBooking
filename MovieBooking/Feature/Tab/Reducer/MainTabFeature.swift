@@ -7,7 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
-
+import SwiftUI
 
 @Reducer
 public struct MainTabFeature {
@@ -18,10 +18,10 @@ public struct MainTabFeature {
 
     var selectTab: MainTab = .home
 
-
     var movieList = MovieListFeature.State()
     var movieSearch = MovieSearchFeature.State()
-    
+    var myPage = MyPageFeature.State()
+
     public init() {}
   }
 
@@ -29,14 +29,20 @@ public struct MainTabFeature {
     case binding(BindingAction<State>)
     case selectTab(MainTab)
     case scope(ScopeAction)
+    case navigation(NavigationAction)
+  }
 
+  public enum NavigationAction {
+    case backToLogin
   }
 
   @CasePathable
   public enum ScopeAction {
     case movieList(MovieListFeature.Action)
     case movieSearch(MovieSearchFeature.Action)
+    case myPage(MyPageFeature.Action)
   }
+
 
   public var body: some Reducer<State, Action> {
     BindingReducer()
@@ -51,6 +57,9 @@ public struct MainTabFeature {
 
         case .scope(let scopeAction):
           return handleScopeAction(state: &state, action: scopeAction)
+
+        case .navigation(let  navigationAction):
+          return handleNavigationAction(state: &state, action: navigationAction)
       }
     }
     Scope(state: \.movieList, action: \.scope.movieList) {
@@ -58,6 +67,9 @@ public struct MainTabFeature {
     }
     Scope(state: \.movieSearch, action: \.scope.movieSearch) {
       MovieSearchFeature()
+    }
+    Scope(state: \.myPage, action: \.scope.myPage) {
+      MyPageFeature()
     }
   }
 }
@@ -68,7 +80,20 @@ extension MainTabFeature {
     action: ScopeAction
   ) -> Effect<Action> {
     switch action {
+      case .myPage(.navigation(.logOutComplete)):
+        return .send(.navigation(.backToLogin), animation: .easeIn)
+
       default:
+        return .none
+    }
+  }
+
+  private func handleNavigationAction(
+    state: inout State,
+    action: NavigationAction
+  ) -> Effect<Action> {
+    switch action {
+      case .backToLogin:
         return .none
     }
   }

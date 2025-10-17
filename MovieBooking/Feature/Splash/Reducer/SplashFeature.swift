@@ -20,7 +20,7 @@ public struct SplashFeature {
 
   @ObservableState
   public struct State: Equatable {
-    
+
     var fadeOut: Bool = false
     var pulse: Bool = false
     @Shared(.inMemory("UserEntity")) var userEntity: UserEntity = .init()
@@ -114,7 +114,7 @@ extension SplashFeature {
 
           try await clock.sleep(for: .seconds(1.3))
           await send(.inner(.setFadeOut(true)))
-          await send(.navigation(.presentLogin))
+          await send(.async(.runAuthCheck))
         }
     }
   }
