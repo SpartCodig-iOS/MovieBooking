@@ -15,7 +15,7 @@ struct AppReducer {
   enum State {
     case splash(SplashFeature.State)
     case auth(AuthCoordinator.State)
-    case mainTab(MainTabReducer.State)
+    case mainTab(MainTabFeature.State)
 
 
 
@@ -40,7 +40,7 @@ struct AppReducer {
   enum ScopeAction {
     case splash(SplashFeature.Action)
     case auth(AuthCoordinator.Action)
-    case mainTab(MainTabReducer.Action)
+    case mainTab(MainTabFeature.Action)
   }
 
   @Dependency(\.continuousClock) var clock
@@ -62,7 +62,7 @@ struct AppReducer {
       AuthCoordinator()
     }
     .ifCaseLet(\.mainTab, action: \.scope.mainTab) {
-      MainTabReducer()
+      MainTabFeature()
     }
   }
 }

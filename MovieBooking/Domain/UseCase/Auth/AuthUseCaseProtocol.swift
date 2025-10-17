@@ -7,7 +7,6 @@
 
 import Foundation
 import AuthenticationServices
-import Supabase
 
 /// UseCase 레벨: 비즈니스 로직 담당 (복합적인 플로우, 도메인 규칙)
 public protocol AuthUseCaseProtocol: Sendable {
@@ -34,18 +33,9 @@ public protocol AuthUseCaseProtocol: Sendable {
 
   // MARK: - 세션 관리
 
-  /// 현재 세션 체크 플로우
-  func checkSession() async throws -> UserEntity
-
   /// 사용자 존재 여부 확인
   func checkUserExists(userId: UUID) async throws -> Bool
 
-  /// 토큰 만료 임박 확인
-  func isTokenExpiringSoon(_ session: Session, threshold: TimeInterval) -> Bool
-
   /// 세션 로그아웃
   func sessionLogOut() async throws
-
-  /// 세션 새로고침 플로우
-  func refreshSession() async throws -> UserEntity
 }

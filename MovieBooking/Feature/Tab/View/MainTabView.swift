@@ -9,16 +9,16 @@ import SwiftUI
 import ComposableArchitecture
 
 struct MainTabView: View {
-  @Perception.Bindable var store: StoreOf<MainTabReducer>
+  @Perception.Bindable var store: StoreOf<MainTabFeature>
 
   var body: some View {
     WithPerceptionTracking {
       TabView(selection: $store.selectTab) {
-        ContentView()
+        MovieListView(store: self.store.scope(state: \.movieList, action: \.scope.movieList))
           .tabItem { Label("홈", systemImage: "house") }
               .tag(MainTab.home)
 
-        ContentView()
+        MovieSearchView(store: self.store.scope(state: \.movieSearch, action: \.scope.movieSearch))
           .tabItem { Label("search", systemImage: "magnifyingglass") }
           .tag(MainTab.book)
 
@@ -38,7 +38,7 @@ struct MainTabView: View {
 
 
 #Preview {
-  MainTabView(store: Store(initialState: MainTabReducer.State(), reducer: {
-    MainTabReducer()
+  MainTabView(store: Store(initialState: MainTabFeature.State(), reducer: {
+    MainTabFeature()
   }))
 }

@@ -10,7 +10,7 @@ import ComposableArchitecture
 import SwiftUI
 
 @Reducer
-struct MovieListFeature {
+public struct MovieListFeature {
   @Dependency(\.movieRepository) var movieRepository
 
   @ObservableState
@@ -22,7 +22,7 @@ struct MovieListFeature {
     @Presents var alert: AlertState<Action.Alert>?
   }
 
-  enum Action {
+  public enum Action {
     case onAppear
     case fetchMovie
     case fetchNowPlayingResponse(Result<[Movie], Error>)
@@ -31,12 +31,12 @@ struct MovieListFeature {
     case selectMovie
     case alert(PresentationAction<Alert>)
 
-    enum Alert: Equatable {
+    public enum Alert: Equatable {
       case retry
     }
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case .onAppear:
