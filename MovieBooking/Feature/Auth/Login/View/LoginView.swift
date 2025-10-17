@@ -47,15 +47,13 @@ struct LoginView: View {
       .scrollIndicators(.hidden)
       .scrollBounceBehavior(.basedOnSize)
       .ignoresSafeArea(.keyboard)
-      .task {
-        send(.onAppear)
-      }
       .onAppear {
         UIScrollView.appearance().bounces = false
+        send(.onAppear)
       }
 
       .floatingPopup(
-        isPresented: $store.showErrorPopUp.sending(\.showErrorPopUp),
+        isPresented: $store.showErrorPopUp,
         alignment: .top
       ) {
         WithPerceptionTracking {

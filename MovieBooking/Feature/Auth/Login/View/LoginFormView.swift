@@ -20,7 +20,7 @@ struct LoginFormView: View {
     VStack(spacing: 16) {
       FormTextField(
         placeholder: "아이디를 입력하세요",
-        text: $store.loginId.sending(\.loginId),
+        text: $store.loginId,
         kind: .email,
         submitLabel: .next,
         onSubmit: { focus = .password },
@@ -29,7 +29,7 @@ struct LoginFormView: View {
 
       FormTextField(
         placeholder: "비밀번호를 입력하세요",
-        text: $store.loginPassword.sending(\.loginPassword),
+        text: $store.loginPassword,
         kind: .password,
         submitLabel: .done,
       )

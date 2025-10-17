@@ -22,7 +22,7 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
   var description: String {
     switch self {
       case .none, .email:
-        return ""
+        return "email"
       case .apple:
         return "Apple"
       case .google:
@@ -41,7 +41,7 @@ public enum SocialType: String, CaseIterable, Identifiable, Hashable {
       case .kakao:
         return "kakao"
       case .none, .email:
-        return ""
+        return "mail"
     }
   }
 

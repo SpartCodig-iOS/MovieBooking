@@ -38,4 +38,5 @@ public protocol AuthUseCaseProtocol: Sendable {
 
   /// 세션 로그아웃
   func sessionLogOut() async throws
+
 }

@@ -44,7 +44,6 @@ public struct AuthUseCase: AuthUseCaseProtocol {
     // 3. 로깅 (비즈니스 관심사)
     #logDebug("회원가입 완료 → \(userEntity.email ?? "unknown")")
 
-    // 4. 도메인 객체 반환
     return userEntity
   }
 
@@ -92,6 +91,7 @@ public struct AuthUseCase: AuthUseCaseProtocol {
     // 5. 비즈니스 규칙: userId 주입
     var userEntity = session
     userEntity.userId = overrideLoginId
+
     return userEntity
   }
 
@@ -118,7 +118,10 @@ extension AuthUseCase: DependencyKey {
     let sessionRepository = UnifiedDI.resolve(SessionRepositoryProtocol.self) ?? SessionRepository()
     let sessionUseCase = UnifiedDI.resolve(SessionUseCaseProtocol.self)
       ?? SessionUseCase(repository: sessionRepository)
-    return AuthUseCase(repository: repository, sessionUseCase: sessionUseCase)
+    return AuthUseCase(
+      repository: repository,
+      sessionUseCase: sessionUseCase
+    )
   }()
 }
 
@@ -144,7 +147,10 @@ extension RegisterModule {
             repository: UnifiedDI.resolve(SessionRepositoryProtocol.self)
               ?? SessionRepository()
           )
-        return AuthUseCase(repository: repo, sessionUseCase: sessionUseCase)
+        return AuthUseCase(
+          repository: repo,
+          sessionUseCase: sessionUseCase
+        )
       }
     )
   }
@@ -154,4 +160,5 @@ extension RegisterModule {
       AuthRepository()
     }
   }
+
 }
