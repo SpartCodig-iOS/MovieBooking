@@ -13,8 +13,13 @@ enum ArrowDirection {
 }
 
 struct CircularArrowButton: View {
-  let direction: ArrowDirection
-  let action: () -> Void
+  private let direction: ArrowDirection
+  private let action: () -> Void
+
+  init(direction: ArrowDirection, action: @escaping () -> Void) {
+    self.direction = direction
+    self.action = action
+  }
 
   private var systemImageName: String {
     switch self.direction {
