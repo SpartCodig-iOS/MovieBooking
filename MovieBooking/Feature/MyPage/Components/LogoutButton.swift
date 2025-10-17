@@ -7,17 +7,26 @@
 
 import SwiftUI
 
-struct LogoutButton: View {
-  var body: some View {
+public  struct LogoutButton: View {
+  var action: () -> Void = { }
+
+  init(
+    action: @escaping () -> Void
+  ) {
+    self.action = action
+  }
+
+  public var body: some View {
     Button {
-      print("로그아웃 버튼이 눌렸습니다!")
+      action()
     } label: {
       HStack(spacing: 8) {
         Image(systemName: "rectangle.portrait.and.arrow.right")
-          .font(.system(size: 14, weight: .semibold))
+          .font(.pretendardFont(family: .semiBold, size: 14))
 
         Text("로그아웃")
-          .font(.system(size: 14, weight: .semibold))
+          .foregroundStyle(.white)
+          .font(.pretendardFont(family: .semiBold, size: 16))
       }
       .frame(maxWidth: .infinity)
       .padding(.vertical, 16)
@@ -30,5 +39,5 @@ struct LogoutButton: View {
 }
 
 #Preview {
-  LogoutButton()
+  LogoutButton(action: {})
 }
