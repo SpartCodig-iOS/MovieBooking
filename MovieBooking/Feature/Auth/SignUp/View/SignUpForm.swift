@@ -9,10 +9,8 @@ import SwiftUI
 import ComposableArchitecture
 
 struct SignUpForm: View {
-  @Perception.Bindable var store: StoreOf<SignUpReducer>
- 
-
-  @FocusState private var focus: SignUpReducer.State.FocusedField?
+  @Perception.Bindable var store: StoreOf<SignUpFeature>
+  @FocusState private var focus: SignUpFeature.State.FocusedField?
 
   var body: some View {
     VStack(spacing: 16) {

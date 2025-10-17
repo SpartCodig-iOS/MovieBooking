@@ -10,13 +10,11 @@ import SwiftUI
 import Perception
 
 struct LoginFormView: View {
-  @Perception.Bindable var store: StoreOf<LoginReducer>
-  var action: () -> Void = {}
+  @Perception.Bindable var store: StoreOf<LoginFeature>
 
-  @FocusState private var idFocused: Bool
-  @FocusState private var pwFocused: Bool
+  @FocusState private var focus: LoginFeature.State.FocusedField?
 
-  private var canSubmit: Bool { !store.loginId.isEmpty && !store.loginPassword.isEmpty }
+  
 
   var body: some View {
     VStack(spacing: 16) {
@@ -25,18 +23,17 @@ struct LoginFormView: View {
         text: $store.loginId.sending(\.loginId),
         kind: .email,
         submitLabel: .next,
-        onSubmit: { pwFocused = true },
-        isFocused: $idFocused
+        onSubmit: { focus = .password },
       )
+      .focused($focus, equals: .id)
 
       FormTextField(
         placeholder: "비밀번호를 입력하세요",
         text: $store.loginPassword.sending(\.loginPassword),
         kind: .password,
         submitLabel: .done,
-        onSubmit: { if canSubmit { action() } },
-        isFocused: $pwFocused
       )
+      .focused($focus, equals: .password)
 
       HStack {
         Checkbox(isOn: $store.saveUserId)
@@ -48,7 +45,6 @@ struct LoginFormView: View {
       }
 
       Button {
-//        action()
         Task {
            store.send(.inner(.setSocialType(.email)))
            store.send(.async(.normalLogin))
@@ -60,20 +56,18 @@ struct LoginFormView: View {
           .frame(maxWidth: .infinity, minHeight: 56)
           .background(
             RoundedRectangle(cornerRadius: 20)
-              .fill(canSubmit ? .violet.opacity(0.6) : .lightLavender)
+              .fill(store.isEnable ? .violet.opacity(0.6) : .lightLavender)
           )
       }
-      .disabled(!canSubmit)
+      .disabled(!store.isEnable)
     }
   }
 }
 
 
 #Preview() {
-  LoginFormView(store: Store(initialState: LoginReducer.State(userEntity: .shared), reducer: {
-    LoginReducer()
-  }), action: {
-
-  })
+  LoginFormView(store: Store(initialState: LoginFeature.State(userEntity: .init()), reducer: {
+    LoginFeature()
+  }))
 }
 

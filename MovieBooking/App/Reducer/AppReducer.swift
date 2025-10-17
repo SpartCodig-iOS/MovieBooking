@@ -13,7 +13,7 @@ struct AppReducer {
 
   @ObservableState
   enum State {
-    case splash(SplashReducer.State)
+    case splash(SplashFeature.State)
     case auth(AuthCoordinator.State)
     case mainTab(MainTabReducer.State)
 
@@ -38,7 +38,7 @@ struct AppReducer {
 
   @CasePathable
   enum ScopeAction {
-    case splash(SplashReducer.Action)
+    case splash(SplashFeature.Action)
     case auth(AuthCoordinator.Action)
     case mainTab(MainTabReducer.Action)
   }
@@ -56,7 +56,7 @@ struct AppReducer {
       }
     }
     .ifCaseLet(\.splash, action: \.scope.splash) {
-      SplashReducer()
+      SplashFeature()
     }
     .ifCaseLet(\.auth, action: \.scope.auth) {
       AuthCoordinator()

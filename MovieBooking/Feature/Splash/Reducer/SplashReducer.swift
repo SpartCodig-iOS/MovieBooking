@@ -1,5 +1,5 @@
 //
-//  SplashReducer.swift
+//  SplashFeature.swift
 //  MovieBooking
 //
 //  Created by Wonji Suh  on 10/14/25.
@@ -15,7 +15,7 @@ import Supabase
 
 
 @Reducer
-public struct SplashReducer {
+public struct SplashFeature {
   public init() {}
 
   @ObservableState
@@ -73,7 +73,7 @@ public struct SplashReducer {
   }
 
   @Dependency(\.continuousClock) var clock
-  @Injected(AuthUseCaseImpl.self) var authUseCase
+  @Injected(AuthUseCase.self) var authUseCase
 
   public var body: some Reducer<State, Action> {
     BindingReducer()
@@ -98,7 +98,7 @@ public struct SplashReducer {
   }
 }
 
-extension SplashReducer {
+extension SplashFeature {
   private func handleViewAction(
     state: inout State,
     action: View
@@ -113,7 +113,7 @@ extension SplashReducer {
 
           try await clock.sleep(for: .seconds(1.3))
           await send(.inner(.setFadeOut(true)))
-          await send(.async(.runAuthCheck))
+          await send(.navigation(.presentLogin))
         }
     }
   }
@@ -146,7 +146,7 @@ extension SplashReducer {
           await send(.async(.checkSession))
 
           if let session = superbase.auth.currentSession {
-            if try await authUseCase.isTokenExpiringSoon(session, threshold: 60) {
+            if await authUseCase.isTokenExpiringSoon(session, threshold: 60) {
               #logDebug("토근 만료 입박 ")
               await send(.async(.refreshSession))
             } else {
@@ -224,8 +224,8 @@ extension SplashReducer {
 
 
 
-extension SplashReducer.State: Hashable {
-  public static func == (lhs: SplashReducer.State, rhs: SplashReducer.State) -> Bool {
+extension SplashFeature.State: Hashable {
+  public static func == (lhs: SplashFeature.State, rhs: SplashFeature.State) -> Bool {
     return lhs.fadeOut == rhs.fadeOut &&
     lhs.pulse == rhs.pulse &&
     lhs.userEntity == rhs.userEntity

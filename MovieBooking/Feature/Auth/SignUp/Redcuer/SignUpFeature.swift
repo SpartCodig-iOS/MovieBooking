@@ -1,5 +1,5 @@
 //
-//  SignUpReducer.swift
+//  SignUpFeature.swift
 //  MovieBooking
 //
 //  Created by Wonji Suh  on 10/16/25.
@@ -12,7 +12,7 @@ import WeaveDI
 import SwiftUI
 
 @Reducer
-public struct SignUpReducer {
+public struct SignUpFeature {
   public init() {}
 
   @ObservableState
@@ -87,7 +87,7 @@ public struct SignUpReducer {
     case auth
   }
 
-  @Injected(AuthUseCaseImpl.self) var authUseCase
+  @Injected(AuthUseCase.self) var authUseCase
   @Dependency(\.mainQueue) var mainQueue
   @Dependency(\.continuousClock) var clock
 
@@ -114,7 +114,7 @@ public struct SignUpReducer {
   }
 }
 
-extension SignUpReducer {
+extension SignUpFeature {
   private func handleViewAction(
     state: inout State,
     action: View
@@ -188,7 +188,7 @@ extension SignUpReducer {
     switch action {
       case .setAuthError(let error):
         state.authErrorMesage = error.description
-        state.authError = DomainError.loginFailed.errorDescription
+        state.authError = AuthError.signUpFailed().errorDescription
         return .none
 
       case .setUser(let userEntity):
@@ -198,8 +198,8 @@ extension SignUpReducer {
   }
 }
 
-extension SignUpReducer.State: Hashable {
-  public static func == (lhs: SignUpReducer.State, rhs: SignUpReducer.State) -> Bool {
+extension SignUpFeature.State: Hashable {
+  public static func == (lhs: SignUpFeature.State, rhs: SignUpFeature.State) -> Bool {
     return lhs.userEmail == rhs.userEmail &&
     lhs.userPassword == rhs.userPassword &&
     lhs.checkPassword == rhs.checkPassword &&

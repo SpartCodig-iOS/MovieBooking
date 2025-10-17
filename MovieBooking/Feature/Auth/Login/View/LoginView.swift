@@ -12,10 +12,10 @@ import AuthenticationServices
 import ComposableArchitecture
 import Supabase
 
-@ViewAction(for: LoginReducer.self)
+@ViewAction(for: LoginFeature.self)
 struct LoginView: View {
-  @Perception.Bindable var store: StoreOf<LoginReducer>
-  let repo = AuthRepositoryImpl()
+  @Perception.Bindable var store: StoreOf<LoginFeature>
+
   var body: some View {
     WithPerceptionTracking {
       @Perception.Bindable var store = store
@@ -31,9 +31,7 @@ struct LoginView: View {
           loginTilte()
 
 
-          LoginFormView(store: store) {
-
-          }
+          LoginFormView(store: store)
 
           socialLoginButtonCard(currentSocialType: store.socialType)
 
@@ -232,7 +230,7 @@ extension LoginView {
           .font(.pretendardFont(family: .semiBold, size: 14))
           .foregroundColor(.basicPurple)
           .onTapGesture {
-            store.send(.navigation(.presentSignUp))
+            store.send(.navigation(.signUpRequested))
           }
       }
     }
@@ -242,9 +240,8 @@ extension LoginView {
 
 #Preview {
   LoginView(
-    store: .init( initialState: LoginReducer.State(userEntity: .shared), reducer: {
-      LoginReducer()}
+    store: .init( initialState: LoginFeature.State(userEntity: .init()), reducer: {
+      LoginFeature()}
                 )
   )
 }
-

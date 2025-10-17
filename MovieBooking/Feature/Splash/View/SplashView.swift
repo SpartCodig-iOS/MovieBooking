@@ -10,9 +10,9 @@ import ComposableArchitecture
 import Supabase
 
 
-@ViewAction(for: SplashReducer.self)
+@ViewAction(for: SplashFeature.self)
 public struct SplashView: View {
-  @Perception.Bindable public var store: StoreOf<SplashReducer>
+  @Perception.Bindable public var store: StoreOf<SplashFeature>
 
   public  var body: some View {
     WithPerceptionTracking {
@@ -96,8 +96,8 @@ extension SplashView {
 
 
 #Preview {
-  SplashView(store: .init(initialState: SplashReducer.State(), reducer: {
-    SplashReducer()
+  SplashView(store: .init(initialState: SplashFeature.State(), reducer: {
+    SplashFeature()
   }))
 }
 

@@ -1,5 +1,5 @@
 //
-//  LoginReducer.swift
+//  LoginFeature.swift
 //  MovieBooking
 //
 //  Created by Wonji Suh  on 10/14/25.
@@ -14,9 +14,8 @@ import WeaveDI
 import LogMacro
 import SwiftUI
 
-
 @Reducer
-public struct LoginReducer {
+public struct LoginFeature {
   public init() {}
 
   @ObservableState
@@ -29,12 +28,19 @@ public struct LoginReducer {
 
     @Shared(.appStorage("loginId"))
     var loginId : String = ""
+    var loginPassword: String = "" 
 
-    var loginPassword: String = ""
 
     @Shared var userEntity: UserEntity
     @Shared(.appStorage("isSaveUserId"))
     var saveUserId: Bool = false
+    var focusedField: FocusedField? = .id
+    enum FocusedField: Equatable { case id, password }
+
+    var isEnable: Bool {
+      !loginId.isEmpty && !loginPassword.isEmpty
+    }
+
 
     public init(
       userEntity: UserEntity
@@ -89,8 +95,8 @@ public struct LoginReducer {
 
   //MARK: - NavigationAction
   public enum NavigationAction: Equatable {
-    case presentMain
-    case presentSignUp
+    case loginCompleted
+    case signUpRequested
 
   }
 
@@ -102,8 +108,8 @@ public struct LoginReducer {
     case normal
   }
 
-  @Injected(OAuthUseCaseImpl.self) var oAuthUseCase
-  @Injected(AuthUseCaseImpl.self) var authUseCase
+  @Injected(OAuthUseCase.self) var oAuthUseCase
+  @Injected(AuthUseCase.self) var authUseCase
 
   @Dependency(\.continuousClock) var clock
   @Dependency(\.mainQueue) var mainQueue
@@ -146,7 +152,7 @@ public struct LoginReducer {
   }
 }
 
-extension LoginReducer {
+extension LoginFeature {
   private func handleViewAction(
     state: inout State,
     action: View
@@ -186,7 +192,7 @@ extension LoginReducer {
             let user = try await oAuthUseCase.signInWithAppleOnce(credential: credential, nonce: nonce)
             await send(.inner(.setUser(user)))
             try await clock.sleep(for: .seconds(0.2))
-            await send(.navigation(.presentMain), animation: .easeIn)
+            await send(.navigation(.loginCompleted), animation: .easeIn)
 
           } catch {
             await send(.inner(.setAuthError(error.localizedDescription)))
@@ -204,7 +210,7 @@ extension LoginReducer {
             case .success(let socialData):
               await send(.inner(.setUser(socialData)))
               try await clock.sleep(for: .seconds(0.2))
-              await send(.navigation(.presentMain), animation: .easeIn)
+              await send(.navigation(.loginCompleted), animation: .easeIn)
 
 
             case .failure(_):
@@ -242,7 +248,7 @@ extension LoginReducer {
             case .success(let userLoginData):
               await send(.inner(.setUser(userLoginData)))
               try await clock.sleep(for: .seconds(0.2))
-              await send(.navigation(.presentMain), animation: .easeIn)
+              await send(.navigation(.loginCompleted), animation: .easeIn)
             case .failure(_):
               await send(.inner(.setAuthError("로그인에 싪패하였습니다!")))
           }
@@ -256,10 +262,10 @@ extension LoginReducer {
     action: NavigationAction
   ) -> Effect<Action> {
     switch action {
-      case .presentMain:
+      case .loginCompleted:
         return .none
 
-      case .presentSignUp:
+      case .signUpRequested:
         return .none
     }
   }
@@ -272,9 +278,9 @@ extension LoginReducer {
       case .setAuthError(let error):
         state.authErrorMesage = error.description
         if state.socialType == .email {
-          state.authError = DomainError.loginFailed.errorDescription
+          state.authError = AuthError.loginFailed().errorDescription
         } else {
-          state.authError = DomainError.authenticationFailed.errorDescription
+          state.authError = OAuthError.socialSignInFailed(provider: state.socialType ?? .none).errorDescription
         }
         state.showErrorPopUp = true
         return .none
@@ -296,8 +302,8 @@ extension LoginReducer {
 }
 
 
-extension LoginReducer.State: Hashable {
-  public static func == (lhs: LoginReducer.State, rhs: LoginReducer.State) -> Bool {
+extension LoginFeature.State: Hashable {
+  public static func == (lhs: LoginFeature.State, rhs: LoginFeature.State) -> Bool {
     lhs.socialType == rhs.socialType &&
     lhs.currentNonce == rhs.currentNonce &&
     lhs.userEntity == rhs.userEntity &&
@@ -306,7 +312,8 @@ extension LoginReducer.State: Hashable {
     lhs.loginId == rhs.loginId &&
     lhs.loginPassword == rhs.loginPassword &&
     lhs.saveUserId == rhs.saveUserId &&
-    lhs.authErrorMesage == rhs.authErrorMesage
+    lhs.authErrorMesage == rhs.authErrorMesage &&
+    lhs.isEnable == rhs.isEnable
   }
   public func hash(into hasher: inout Hasher) {
     hasher.combine(socialType)
@@ -318,5 +325,6 @@ extension LoginReducer.State: Hashable {
     hasher.combine(loginPassword)
     hasher.combine(saveUserId)
     hasher.combine(authErrorMesage)
+    hasher.combine(isEnable)
   }
 }

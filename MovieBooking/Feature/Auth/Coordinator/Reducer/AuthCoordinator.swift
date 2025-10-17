@@ -60,10 +60,10 @@ extension AuthCoordinator {
     action: IndexedRouterActionOf<AuthScreen>
   ) -> Effect<Action> {
     switch action {
-      case .routeAction(id: _, action: .login(.navigation(.presentMain))):
+      case .routeAction(id: _, action: .login(.navigation(.loginCompleted))):
         return .send(.navigation(.presentMain), animation: .easeIn)
 
-      case .routeAction(id: _, action: .login(.navigation(.presentSignUp))):
+      case .routeAction(id: _, action: .login(.navigation(.signUpRequested))):
         state.routes.push(.signUp(.init()))
         return .none
 
@@ -97,7 +97,7 @@ extension AuthCoordinator {
 extension AuthCoordinator {
   @Reducer(state: .equatable, .hashable)
   public enum AuthScreen {
-    case login(LoginReducer)
-    case signUp(SignUpReducer)
+    case login(LoginFeature)
+    case signUp(SignUpFeature)
   }
 }

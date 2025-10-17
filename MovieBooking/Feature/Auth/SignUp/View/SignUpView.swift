@@ -10,10 +10,10 @@ import ComposableArchitecture
 internal import Auth
 import Supabase
 
-@ViewAction(for: SignUpReducer.self)
+@ViewAction(for: SignUpFeature.self)
 struct SignUpView: View {
-  @Perception.Bindable var store: StoreOf<SignUpReducer>
-  @FocusState private var focus: SignUpReducer.State.FocusedField?
+  @Perception.Bindable var store: StoreOf<SignUpFeature>
+  @FocusState private var focus: SignUpFeature.State.FocusedField?
 
   var body: some View {
     WithPerceptionTracking {
@@ -127,7 +127,7 @@ extension SignUpView {
 }
 
 #Preview {
-  SignUpView(store: Store(initialState: SignUpReducer.State(), reducer: {
-    SignUpReducer()
+  SignUpView(store: Store(initialState: SignUpFeature.State(), reducer: {
+    SignUpFeature()
   }))
 }
