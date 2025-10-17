@@ -11,14 +11,14 @@ import Supabase
 import LogMacro
 
 public class AuthRepositoryImpl: AuthInterface {
-
-  
   private let client = SuperBaseManger.shared.client
 
   nonisolated public init() {}
 
   // MARK: - superbase 애플 로그인 토큰 받아오기
-  public func idToken(from credential: ASAuthorizationAppleIDCredential) throws -> String {
+  public func idToken(
+    from credential: ASAuthorizationAppleIDCredential
+  ) throws -> String {
     guard
       let data = credential.identityToken,
       let token = String(data: data, encoding: .utf8)
@@ -32,14 +32,16 @@ public class AuthRepositoryImpl: AuthInterface {
   public func signInWithApple(
     idToken: String,
     nonce: String
-  ) async throws -> Supabase.Session { 
+  ) async throws -> Supabase.Session {
     try await client.auth.signInWithIdToken(
       credentials: .init(provider: .apple, idToken: idToken, nonce: nonce)
     )
   }
 
   // MARK: - superbase 이름 업데이트
-  public func updateDisplayName(_ name: String) async throws {
+  public func updateDisplayName(
+    _ name: String
+  ) async throws {
     try await client.auth.update(
       user: UserAttributes(data: ["display_name": .string(name)])
     )
@@ -73,7 +75,9 @@ public class AuthRepositoryImpl: AuthInterface {
   }
 
   // MARK: - superbase 애플 제외 소셜 회원가입
-  public func signInWithSocial(type: SocialType) async throws -> UserEntity {
+  public func signInWithSocial(
+    type: SocialType
+  ) async throws -> UserEntity {
     try await client.auth.signInWithOAuth(
       provider: type.supabaseProvider,
       queryParams: type.promptParams
@@ -112,7 +116,7 @@ public class AuthRepositoryImpl: AuthInterface {
   }
 
   public func signUpNormalUser(name: String, email: String, password: String) async throws -> UserEntity {
-     try await supabase.auth.signUp(
+     try await client.auth.signUp(
       email: email,
       password: password,
       data: [
@@ -152,7 +156,6 @@ public class AuthRepositoryImpl: AuthInterface {
     } else {
       // 아이디로 들어온 경우: login_id -> email 매핑 후 로그인
       let loginId = email.normalizedId
-
       // 파라미터 이름과 겹치지 않도록 다른 이름 사용
       let resolvedEmail = try await resolveEmail(fromLoginId: loginId)
 
@@ -160,7 +163,6 @@ public class AuthRepositoryImpl: AuthInterface {
         email: resolvedEmail,
         password: password
       )
-
       // 아이디 로그인 시에는 그 아이디를 userId로 사용
       overrideLoginId = loginId
     }
@@ -190,5 +192,49 @@ public class AuthRepositoryImpl: AuthInterface {
       email.removeFirst(); email.removeLast()
     }
     return email.lowercased()
+  }
+
+  // MARK: - 세션 체크
+  public func checkSession() async throws -> UserEntity {
+    if let session = client.auth.currentSession {
+      return session.toDomain()
+    }
+
+    let session = try await client.auth.session
+    return session.toDomain()
+  }
+
+  // MARK: - superbase 에 데이터가 있는지 확인 및  DB 존재 여부
+  public func checkUserExists(userId: UUID) async throws -> Bool {
+    let response = try await client
+      .from("profiles")
+      .select("id")
+      .eq("id", value: userId.uuidString)
+      .limit(1)
+      .execute()
+//    #logDebug("🟡 DB 응답:", response)
+    return !response.data.isEmpty
+  }
+
+  // MARK: - token 이 만료 되었는지 확인
+  public func isTokenExpiringSoon(
+    _ session: Session,
+    threshold: TimeInterval = 60
+  ) async throws -> Bool {
+    // expiresAt은 Double (UNIX timestamp)
+    let expireDate = Date(
+      timeIntervalSince1970: session.expiresAt
+    )
+
+    let remaining = expireDate.timeIntervalSinceNow
+    #logDebug("만료일:",expireDate)
+    #logDebug("남은 시간:",remaining,"초")
+
+    return remaining <= threshold
+  }
+
+  // MARK: - sessionLogOut
+  public func sessionLogOut() async throws {
+    return try await client.auth.signOut()
   }
 }

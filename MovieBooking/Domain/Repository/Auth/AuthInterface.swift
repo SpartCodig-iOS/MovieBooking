@@ -26,6 +26,12 @@ public protocol AuthInterface: Sendable {
     email: String,
     password: String
   ) async throws -> UserEntity
-
-  func resolveEmail(fromLoginId loginId: String) async throws -> String 
+  func resolveEmail(fromLoginId loginId: String) async throws -> String
+  func checkSession() async throws -> UserEntity
+  func checkUserExists(userId: UUID) async throws -> Bool
+  func isTokenExpiringSoon(_ session: Session, threshold: TimeInterval) async throws -> Bool
+  func sessionLogOut() async throws
 }
+
+
+

@@ -9,6 +9,7 @@ import AuthenticationServices
 import Supabase
 
 final public class MockAuthRepositoryImpl : AuthInterface {
+  
   public var idTokenHandler: (ASAuthorizationAppleIDCredential) throws -> String = { _ in
     "dummy.id.token"
   }
@@ -106,6 +107,24 @@ final public class MockAuthRepositoryImpl : AuthInterface {
 
   public  func resolveEmail(fromLoginId loginId: String) async throws -> String  {
     return ""
+  }
+
+  public func checkSession() async throws -> UserEntity {
+    return UserEntity()
+  }
+
+  public func checkUserExists(userId: UUID) async throws -> Bool {
+    return false
+  }
+
+  public func isTokenExpiringSoon(
+    _ session: Auth.Session,
+    threshold: TimeInterval
+  )  async throws  -> Bool {
+    return false
+  }
+
+  public func sessionLogOut() async throws {
   }
 }
 

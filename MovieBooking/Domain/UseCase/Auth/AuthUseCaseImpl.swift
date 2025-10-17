@@ -48,7 +48,9 @@ public struct AuthUseCaseImpl: AuthInterface {
     return try await repository.signInWithAppleOnce(credential: credential, nonce: nonce)
   }
 
-  public func signInWithSocial(type: SocialType) async throws -> UserEntity {
+  public func signInWithSocial(
+    type: SocialType
+  ) async throws -> UserEntity {
     return try await repository.signInWithSocial(type: type)
   }
 
@@ -78,8 +80,31 @@ public struct AuthUseCaseImpl: AuthInterface {
     )
   }
 
-  public func resolveEmail(fromLoginId loginId: String) async throws -> String {
+  public func resolveEmail(
+    fromLoginId loginId: String
+  ) async throws -> String {
     return try await repository.resolveEmail(fromLoginId: loginId)
+  }
+
+  public func checkSession() async throws -> UserEntity {
+    return try await repository.checkSession()
+  }
+
+  public func checkUserExists(
+    userId: UUID
+  ) async throws -> Bool {
+    return try await repository.checkUserExists(userId: userId)
+  }
+
+  public func isTokenExpiringSoon(
+    _ session: Auth.Session,
+    threshold: TimeInterval = 60
+  ) async throws -> Bool {
+    return try await repository.isTokenExpiringSoon(session, threshold: threshold)
+  }
+
+  public func sessionLogOut() async throws {
+    return try await repository.sessionLogOut()
   }
 }
 
