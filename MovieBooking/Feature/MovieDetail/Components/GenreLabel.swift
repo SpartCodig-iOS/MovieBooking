@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct GenreLabel: View {
-  let genre: Genre
+  private let genre: Genre
+  
+  init(genre: Genre) {
+    self.genre = genre
+  }
   
   var body: some View {
     Text(genre.name)

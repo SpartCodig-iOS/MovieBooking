@@ -46,9 +46,9 @@ struct MovieDetailCardView: View {
         Text("예매하기")
           .frame(maxWidth: .infinity)
           .font(.system(size: 16, weight: .bold))
-          .foregroundStyle(Color.white)
+          .foregroundStyle(.white)
+          .background(.basicPurple)
           .padding(.vertical, 16)
-          .background(Color.basicPurple)
           .clipShape(Capsule())
           .shadow(color: .black.opacity(0.2), radius: 5, y: 5)
       }
