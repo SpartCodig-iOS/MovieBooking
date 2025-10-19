@@ -21,9 +21,9 @@ struct MovieBookFeature {
     let posterPath: String
     let title: String
     var theaters: [MovieTheater] = []
-    var times: [String] = []
+    var showTimes: [ShowTime] = []
     var selectedTheater: MovieTheater?
-    var selectedTime: String?
+    var selectedShowTime: ShowTime?
     var numberOfPeople: Int = 1
     let pricePerTicket: Int = 13000
     var isBookingInProgress: Bool = false
@@ -40,14 +40,14 @@ struct MovieBookFeature {
     enum ViewAction {
       case onAppear
       case theaterSelected(MovieTheater)
-      case timeSelected(String)
+      case showTimeSelected(ShowTime)
       case numberOfPeopleChanged(Int)
       case onTapBookButton
     }
 
     enum AsyncAction {
       case fetchTheatersResponse(Result<[MovieTheater], Error>)
-      case fetchTimesResponse(Result<[String], Error>)
+      case fetchTimesResponse(Result<[ShowTime], Error>)
       case createBookingResponse(Result<BookingInfo, Error>)
     }
 
@@ -68,9 +68,9 @@ struct MovieBookFeature {
       switch action {
       case .binding(\.numberOfPeople):
         return .send(.view(.numberOfPeopleChanged(state.numberOfPeople)))
-      case .binding(\.selectedTime):
-        guard let selectedTime = state.selectedTime else { return .none }
-        return .send(.view(.timeSelected(selectedTime)))
+      case .binding(\.selectedShowTime):
+        guard let selectedShowTime = state.selectedShowTime else { return .none }
+        return .send(.view(.showTimeSelected(selectedShowTime)))
       case .binding(\.selectedTheater):
         guard let selectedTheater = state.selectedTheater else { return .none }
         return .send(.view(.theaterSelected(selectedTheater)))
@@ -101,13 +101,13 @@ extension MovieBookFeature {
 
     case .theaterSelected(let theater):
       state.selectedTheater = theater
-      state.selectedTime = nil
-      state.times = []
+      state.selectedShowTime = nil
+      state.showTimes = []
       return .send(.inner(.fetchTimes(theaterId: theater.id)))
 
-    case .timeSelected(let time):
-      state.selectedTime = time
-      print(time)
+    case .showTimeSelected(let showTime):
+      state.selectedShowTime = showTime
+      print(showTime.fullDisplay)
       return .none
 
     case .numberOfPeopleChanged(let count):
@@ -117,7 +117,7 @@ extension MovieBookFeature {
     case .onTapBookButton:
       // 유효성 검사
       guard state.selectedTheater != nil,
-            state.selectedTime != nil else {
+            state.selectedShowTime != nil else {
         state.alert = AlertState(title: {
           TextState("예매 오류")
         }, actions: {
@@ -147,7 +147,7 @@ extension MovieBookFeature {
       return .none
 
     case .fetchTimesResponse(.success(let times)):
-      state.times = times
+      state.showTimes = times
       return .none
 
     case .fetchTimesResponse(.failure):
@@ -222,7 +222,7 @@ extension MovieBookFeature {
 
     case .createBooking:
       guard let theater = state.selectedTheater,
-            let time = state.selectedTime else {
+            let showTime = state.selectedShowTime else {
         return .none
       }
 
@@ -234,7 +234,8 @@ extension MovieBookFeature {
         posterPath: state.posterPath,
         theaterId: theater.id,
         theaterName: theater.name,
-        showTime: time,
+        showDate: showTime.date,
+        showTime: showTime.time,
         numberOfPeople: state.numberOfPeople,
         totalPrice: state.pricePerTicket * state.numberOfPeople
       )

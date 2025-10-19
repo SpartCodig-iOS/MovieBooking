@@ -12,14 +12,14 @@ protocol FetchMovieTimesUseCaseProtocol {
   func execute(
     _ movieId: String,
     at theaterId: Int
-  ) async throws -> [String]
+  ) async throws -> [ShowTime]
 }
 
 struct FetchMovieTimesUseCase: FetchMovieTimesUseCaseProtocol {
   func execute(
     _ movieId: String,
     at theaterId: Int
-  ) async throws -> [String] {
+  ) async throws -> [ShowTime] {
     try await Task.sleep(nanoseconds: 300_000_000) // 0.3초 딜레이
 
     // movieId와 theaterId를 시드로 사용하여 일관된 랜덤 결과 생성
@@ -35,6 +35,11 @@ struct FetchMovieTimesUseCase: FetchMovieTimesUseCaseProtocol {
       "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"
     ]
 
+    // 향후 7일 중 랜덤 날짜 생성 (3~5일 사이)
+    let daysAhead = Int(generator.next() % 3) + 3 // 3~5일 후
+    let calendar = Calendar.current
+    let showDate = calendar.date(byAdding: .day, value: daysAhead, to: Date())!
+
     // 랜덤하게 4~8개의 상영 시간 선택
     let timeCount = Int(generator.next() % 5) + 4 // 4~8
     var selectedIndices = Set<Int>()
@@ -44,7 +49,9 @@ struct FetchMovieTimesUseCase: FetchMovieTimesUseCaseProtocol {
       selectedIndices.insert(index)
     }
 
-    return selectedIndices.sorted().map { possibleTimes[$0] }
+    return selectedIndices.sorted().map { index in
+      ShowTime(date: showDate, time: possibleTimes[index])
+    }
   }
 }
 

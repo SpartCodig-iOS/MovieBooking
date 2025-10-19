@@ -9,9 +9,9 @@ import SwiftUI
 
 struct BookingOptionsCard: View {
   let theaters: [MovieTheater]
-  let times: [String]
+  let showTimes: [ShowTime]
   @Binding var selectedTheater: MovieTheater?
-  @Binding var selectedTime: String?
+  @Binding var selectedShowTime: ShowTime?
   @Binding var numberOfPeople: Int
 
   var body: some View {
@@ -29,11 +29,11 @@ struct BookingOptionsCard: View {
       // 상영시간 선택
       SelectionListView(
         title: "상영시간",
-        items: times,
-        selectedItem: selectedTime,
-        onSelect: { selectedTime = $0 },
+        items: showTimes,
+        selectedItem: selectedShowTime,
+        onSelect: { selectedShowTime = $0 },
         placeholder: "상영시간을 선택해주세요",
-        displayText: { $0 }
+        displayText: { "\($0.displayShortDate) \($0.time)" }
       )
       .disabled(selectedTheater == nil)
       .opacity(selectedTheater == nil ? 0.5 : 1.0)
@@ -61,7 +61,7 @@ struct BookingOptionsCard: View {
 
 private struct BookingOptionsCardPreview: View {
   @State var selectedTheater: MovieTheater? = MovieTheater(id: 1, name: "CGV 강남")
-  @State var selectedTime: String? = "14:30"
+  @State var selectedShowTime: ShowTime? = ShowTime(date: Date(), time: "14:30")
   @State var numberOfPeople = 1
 
   var body: some View {
@@ -72,9 +72,16 @@ private struct BookingOptionsCardPreview: View {
         MovieTheater(id: 3, name: "롯데시네마 월드타워"),
         MovieTheater(id: 4, name: "CGV 용산")
       ],
-      times: ["10:00", "12:30", "14:30", "17:00", "19:30", "22:00"],
+      showTimes: [
+        ShowTime(date: Date(), time: "10:00"),
+        ShowTime(date: Date(), time: "12:30"),
+        ShowTime(date: Date(), time: "14:30"),
+        ShowTime(date: Date(), time: "17:00"),
+        ShowTime(date: Date(), time: "19:30"),
+        ShowTime(date: Date(), time: "22:00")
+      ],
       selectedTheater: $selectedTheater,
-      selectedTime: $selectedTime,
+      selectedShowTime: $selectedShowTime,
       numberOfPeople: $numberOfPeople
     )
     .padding()

@@ -19,9 +19,9 @@ struct MovieBookView: View {
           // 극장/시간/인원 선택 카드
           BookingOptionsCard(
             theaters: store.theaters,
-            times: store.times,
+            showTimes: store.showTimes,
             selectedTheater: $store.selectedTheater,
-            selectedTime: $store.selectedTime,
+            selectedShowTime: $store.selectedShowTime,
             numberOfPeople: $store.numberOfPeople
           )
           // 결제 정보 카드
