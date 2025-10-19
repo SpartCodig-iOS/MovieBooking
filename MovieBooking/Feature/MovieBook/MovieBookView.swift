@@ -32,11 +32,23 @@ struct MovieBookView: View {
             numberOfPeople: store.numberOfPeople,
             onPaymentTapped: { send(.onTapBookButton) }
           )
+          .disabled(store.isBookingInProgress)
+          .opacity(store.isBookingInProgress ? 0.6 : 1.0)
         }
         .padding(24)
       }
       .onAppear {
         send(.onAppear)
+      }
+      .alert($store.scope(state: \.alert, action: \.alert))
+      .overlay {
+        if store.isBookingInProgress {
+          ProgressView("예매 중...")
+            .padding()
+            .background(Color.white)
+            .cornerRadius(10)
+            .shadow(radius: 10)
+        }
       }
     }
   }

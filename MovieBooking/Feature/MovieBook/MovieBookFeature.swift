@@ -7,11 +7,13 @@
 
 import Foundation
 import ComposableArchitecture
+internal import SwiftUICore
 
 @Reducer
 struct MovieBookFeature {
   @Dependency(\.fetchMovieTimesUseCase) var fetchMovieTimesUseCase
   @Dependency(\.fetchMovieTheatersUseCase) var fetchMovieTheatersUseCase
+  @Dependency(\.createBookingUseCase) var createBookingUseCase
 
   @ObservableState
   struct State {
@@ -24,6 +26,8 @@ struct MovieBookFeature {
     var selectedTime: String?
     var numberOfPeople: Int = 1
     let pricePerTicket: Int = 13000
+    var isBookingInProgress: Bool = false
+    @Presents var alert: AlertState<Action.Alert>?
   }
 
   enum Action: ViewAction, BindableAction {
@@ -31,6 +35,7 @@ struct MovieBookFeature {
     case view(ViewAction)
     case async(AsyncAction)
     case inner(InnerAction)
+    case alert(PresentationAction<Alert>)
 
     enum ViewAction {
       case onAppear
@@ -43,11 +48,17 @@ struct MovieBookFeature {
     enum AsyncAction {
       case fetchTheatersResponse(Result<[MovieTheater], Error>)
       case fetchTimesResponse(Result<[String], Error>)
+      case createBookingResponse(Result<BookingInfo, Error>)
     }
 
     enum InnerAction {
       case fetchTheaters
       case fetchTimes(theaterId: Int)
+      case createBooking
+    }
+
+    enum Alert {
+      case confirmBookingSuccess
     }
   }
 
@@ -71,8 +82,11 @@ struct MovieBookFeature {
         return handleAsyncAction(&state, asyncAction)
       case .inner(let innerAction):
         return handleInnerAction(&state, innerAction)
+      case .alert:
+        return .none
       }
     }
+    .ifLet(\.$alert, action: \.alert)
   }
 }
 
@@ -101,12 +115,22 @@ extension MovieBookFeature {
       return .none
       
     case .onTapBookButton:
-      print("결제하기 버튼 눌림")
-      print("극장: \(state.selectedTheater?.name ?? "선택 안 됨")")
-      print("시간: \(state.selectedTime ?? "선택 안 됨")")
-      print("인원: \(state.numberOfPeople)명")
-      print("총액: ₩\((state.pricePerTicket * state.numberOfPeople).formatted())")
-      return .none
+      // 유효성 검사
+      guard state.selectedTheater != nil,
+            state.selectedTime != nil else {
+        state.alert = AlertState(title: {
+          TextState("예매 오류")
+        }, actions: {
+          ButtonState(role: .cancel) {
+            TextState("확인")
+          }
+        }, message: {
+          TextState("극장과 상영시간을 모두 선택해주세요.")
+        })
+        return .none
+      }
+
+      return .send(.inner(.createBooking))
     }
   }
 
@@ -127,6 +151,40 @@ extension MovieBookFeature {
       return .none
 
     case .fetchTimesResponse(.failure):
+      return .none
+
+    case .createBookingResponse(.success(let booking)):
+      state.isBookingInProgress = false
+      print("✅ 예매 성공!")
+      print("예매 ID: \(booking.id)")
+      print("영화: \(booking.movieTitle)")
+      print("극장: \(booking.theaterName)")
+      print("시간: \(booking.showTime)")
+      print("인원: \(booking.numberOfPeople)명")
+      print("총액: ₩\(booking.totalPrice.formatted())")
+
+      state.alert = AlertState {
+        TextState("예매 완료")
+      } actions: {
+        ButtonState(action: .confirmBookingSuccess) {
+          TextState("확인")
+        }
+      } message: {
+        TextState("영화 예매가 성공적으로 완료되었습니다!")
+      }
+      return .none
+
+    case .createBookingResponse(.failure(let error)):
+      state.isBookingInProgress = false
+      state.alert = AlertState {
+        TextState("예매 오류")
+      } actions: {
+        ButtonState(role: .cancel) {
+          TextState("확인")
+        }
+      } message: {
+        TextState("예매에 실패했습니다: \(error.localizedDescription)")
+      }
       return .none
     }
   }
@@ -156,6 +214,37 @@ extension MovieBookFeature {
             .fetchTimesResponse(
               Result {
                 try await fetchMovieTimesUseCase.execute(movieId, at: theaterId)
+              }
+            )
+          )
+        )
+      }
+
+    case .createBooking:
+      guard let theater = state.selectedTheater,
+            let time = state.selectedTime else {
+        return .none
+      }
+
+      state.isBookingInProgress = true
+
+      let bookingInfo = BookingInfo(
+        movieId: state.movieId,
+        movieTitle: state.title,
+        posterPath: state.posterPath,
+        theaterId: theater.id,
+        theaterName: theater.name,
+        showTime: time,
+        numberOfPeople: state.numberOfPeople,
+        totalPrice: state.pricePerTicket * state.numberOfPeople
+      )
+
+      return .run { send in
+        await send(
+          .async(
+            .createBookingResponse(
+              Result {
+                try await createBookingUseCase.execute(bookingInfo)
               }
             )
           )
