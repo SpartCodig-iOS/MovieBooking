@@ -114,7 +114,6 @@ extension MyPageFeature {
       case .logOutUser:
         return .run { send in
           try await authUseCase.sessionLogOut()
-          try await clock.sleep(for: .seconds(0.3))
           await send(.view(.closePopUp))
           try await clock.sleep(for: .seconds(0.4))
           await send(.navigation(.logOutComplete))

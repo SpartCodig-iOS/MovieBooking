@@ -65,7 +65,7 @@ struct ProfileBoxView: View {
 
           Spacer()
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 20)
 
 //        Divider()
 //          .padding(.horizontal, 24)

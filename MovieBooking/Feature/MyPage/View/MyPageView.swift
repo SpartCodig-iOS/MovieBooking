@@ -42,7 +42,7 @@ struct MyPageView: View {
     }
     .customAlert(
       isPresented: store.appearPopUp,
-      title: "르그아웃",
+      title: "로그아웃",
       message: "정말 로그아웃하시겠어요?",
       isUseConfirmButton: false,
       onConfirm: {
