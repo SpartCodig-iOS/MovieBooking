@@ -15,15 +15,8 @@ struct BookingListView: View {
   var body: some View {
     WithPerceptionTracking {
       VStack(alignment: .leading) {
-        VStack(alignment: .leading, spacing: 4) {
-          Text("예매 내역")
-            .font(.system(size: 20, weight: .semibold))
-            .foregroundStyle(Color.primary)
-          
-          Text("내가 예매한 영화를 확인하세요")
-            .font(.system(size: 16, weight: .regular))
-            .foregroundStyle(Color.secondary)
-        }
+        headerView
+        
         Group {
           if store.isLoading {
             ProgressView("예매 내역 불러오는 중...")
@@ -41,6 +34,19 @@ struct BookingListView: View {
     }
   }
 
+  @ViewBuilder
+  private var headerView: some View {
+    VStack(alignment: .leading, spacing: 4) {
+      Text("예매 내역")
+        .font(.system(size: 20, weight: .semibold))
+        .foregroundStyle(Color.primary)
+      
+      Text("내가 예매한 영화를 확인하세요")
+        .font(.system(size: 16, weight: .regular))
+        .foregroundStyle(Color.secondary)
+    }
+  }
+  
   @ViewBuilder
   private var emptyView: some View {
     VStack(spacing: 16) {
