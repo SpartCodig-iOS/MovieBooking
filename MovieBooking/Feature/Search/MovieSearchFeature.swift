@@ -9,21 +9,21 @@ import ComposableArchitecture
 import Foundation
 
 @Reducer
-struct MovieSearchFeature {
+public struct MovieSearchFeature {
   @ObservableState
-  struct State: Equatable {
+  public struct State: Equatable {
     var nowPlayingMovies: [Movie] = []
     var upcomingMovies: [Movie] = []
     var popularMovies: [Movie] = []
     var searchText: String = ""
   }
 
-  enum Action: BindableAction {
+  public enum Action: BindableAction {
     case updateMovieLists(nowPlaying: [Movie], upcoming: [Movie], popular: [Movie])
     case binding(BindingAction<State>)
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
       switch action {

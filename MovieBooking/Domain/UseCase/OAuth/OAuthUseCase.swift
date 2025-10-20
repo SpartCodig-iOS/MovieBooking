@@ -66,13 +66,6 @@ public struct OAuthUseCase: OAuthUseCaseProtocol {
     return userEntity
   }
 
-  // MARK: - 세션 관리
-
-  public func fetchCurrentSocialType() async throws -> SocialType? {
-    let raw = try await repository.getCurrentProvider() ?? "unknown"
-    return SocialType(rawValue: raw)
-  }
-
 }
 
 // MARK: - DI 설정
@@ -83,7 +76,10 @@ extension OAuthUseCase: DependencyKey {
     let sessionRepository = UnifiedDI.resolve(SessionRepositoryProtocol.self) ?? SessionRepository()
     let sessionUseCase = UnifiedDI.resolve(SessionUseCaseProtocol.self)
       ?? SessionUseCase(repository: sessionRepository)
-    return OAuthUseCase(repository: repository, sessionUseCase: sessionUseCase)
+    return OAuthUseCase(
+      repository: repository,
+      sessionUseCase: sessionUseCase
+    )
   }()
 }
 
@@ -109,7 +105,10 @@ extension RegisterModule {
             repository: UnifiedDI.resolve(SessionRepositoryProtocol.self)
               ?? SessionRepository()
           )
-        return OAuthUseCase(repository: repo, sessionUseCase: sessionUseCase)
+        return OAuthUseCase(
+          repository: repo,
+          sessionUseCase: sessionUseCase
+        )
       }
     )
   }

@@ -20,7 +20,7 @@ public struct SplashFeature {
 
   @ObservableState
   public struct State: Equatable {
-    
+
     var fadeOut: Bool = false
     var pulse: Bool = false
     @Shared(.inMemory("UserEntity")) var userEntity: UserEntity = .init()
@@ -74,6 +74,7 @@ public struct SplashFeature {
 
   @Dependency(\.continuousClock) var clock
   @Injected(AuthUseCase.self) var authUseCase
+  @Injected(SessionUseCase.self) var sessionUseCase
 
   public var body: some Reducer<State, Action> {
     BindingReducer()
@@ -113,7 +114,7 @@ extension SplashFeature {
 
           try await clock.sleep(for: .seconds(1.3))
           await send(.inner(.setFadeOut(true)))
-          await send(.navigation(.presentLogin))
+          await send(.async(.runAuthCheck))
         }
     }
   }
@@ -127,7 +128,7 @@ extension SplashFeature {
       case .checkSession:
         return .run {  send in
           let checkSessionResult = await Result {
-            try await authUseCase.checkSession()
+            try await sessionUseCase.checkSession()
           }
 
           switch checkSessionResult {
@@ -146,7 +147,7 @@ extension SplashFeature {
           await send(.async(.checkSession))
 
           if let session = superbase.auth.currentSession {
-            if await authUseCase.isTokenExpiringSoon(session, threshold: 60) {
+            if await sessionUseCase.isTokenExpiringSoon(session, threshold: 60) {
               #logDebug("토근 만료 입박 ")
               await send(.async(.refreshSession))
             } else {
@@ -154,7 +155,7 @@ extension SplashFeature {
             }
           }
 
-          if let user = try?  await authUseCase.checkSession() {
+          if let user = try?  await sessionUseCase.checkSession() {
             let uuid = UUID(uuidString: user.id)!
             let exists = try? await authUseCase.checkUserExists(userId: uuid)
             #logDebug(exists == true ? "✅ 메인으로 이동" : "⚠️ 프로필 등록 필요")
@@ -170,7 +171,7 @@ extension SplashFeature {
       case .refreshSession:
         return .run { send in
           let sessionResult = await Result {
-            try await authUseCase.refreshSession()
+            try await sessionUseCase.refreshSession()
           }
 
           switch sessionResult {
@@ -237,4 +238,3 @@ extension SplashFeature.State: Hashable {
     hasher.combine(userEntity)
   }
 }
-

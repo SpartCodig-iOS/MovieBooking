@@ -18,4 +18,5 @@ public extension ShapeStyle where Self == Color {
   static var indigo500: Color { .init(hex: "6C4EFF") }
   static var statusError: Color { .init(hex: "D32F2F")}
   static var gray500: Color { .init(hex: "9E9E9E")}
+  static var lavenderPurple: Color { .init(hex: "C4B5FD")}
 }
