@@ -8,6 +8,6 @@
 import Foundation
 
 enum MovieTarget {
-    case movieDetail(id: String)
-    case movieList(category: MovieCategory, page: Int = 1)
+  case movieDetail(id: String, request: MovieDetailRequestDTO)
+  case movieList(category: MovieCategory, page: Int = 1)
 }

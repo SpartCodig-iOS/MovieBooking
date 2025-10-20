@@ -12,11 +12,12 @@ protocol MovieRepositoryProtocol {
   func fetchNowPlayingMovies() async throws -> [Movie]
   func fetchUpcomingMovies() async throws -> [Movie]
   func fetchPopularMovies() async throws -> [Movie]
+  func fetchMovieDetail(id: String) async throws -> MovieDetail
 }
 
 private enum MovieRepositoryKey: DependencyKey {
   static let liveValue: any MovieRepositoryProtocol = MovieRepository()
-  static let previewValue: any MovieRepositoryProtocol = MockMovieRepository()
+  static let previewValue: any MovieRepositoryProtocol = MovieRepository()
   static let testValue: any MovieRepositoryProtocol = MockMovieRepository()
 }
 

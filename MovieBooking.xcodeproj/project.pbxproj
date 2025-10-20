@@ -51,6 +51,8 @@
 				Data/DataSources/APIConfiguration.swift,
 				Data/DataSources/MovieDataSource.swift,
 				Data/DTO/Response/MovieDetailResponseDTO.swift,
+				Domain/Entity/Error/Movie/MovieDetailError.swift,
+				Feature/MovieDetail/MovieDetailFeature.swift,
 				NetworkService/Core/ContentType.swift,
 				NetworkService/Core/HTTPHeader.swift,
 				NetworkService/Core/HTTPHeaders.swift,

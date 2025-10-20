@@ -1,5 +1,5 @@
 //
-//  StarRatingView.swift
+//  DetailStarRatingView.swift
 //  MovieBooking
 //
 //  Created by 홍석현 on 10/17/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct StarRatingView: View {
+struct DetailStarRatingView: View {
   private let rating: Double // 0.0 ~ 10.0 범위
   private let maxStars: Int = 5
   
@@ -72,15 +72,15 @@ struct StarRatingView: View {
 
 #Preview {
   VStack(spacing: 20) {
-    StarRatingView(rating: 8.7)
+    DetailStarRatingView(rating: 8.7)
 
-    StarRatingView(rating: 7.5)
+    DetailStarRatingView(rating: 7.5)
 
-    StarRatingView(rating: 9.2)
+    DetailStarRatingView(rating: 9.2)
 
-    StarRatingView(rating: 5.0)
+    DetailStarRatingView(rating: 5.0)
 
-    StarRatingView(rating: 10.0)
+    DetailStarRatingView(rating: 10.0)
   }
   .padding()
 }
