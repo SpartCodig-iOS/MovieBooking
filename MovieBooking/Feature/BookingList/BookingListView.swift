@@ -14,8 +14,9 @@ struct BookingListView: View {
   
   var body: some View {
     WithPerceptionTracking {
-      VStack(alignment: .leading) {
+      VStack {
         headerView
+          .frame(maxWidth: .infinity, alignment: .leading)
         
         Group {
           if store.isLoading {
@@ -26,6 +27,7 @@ struct BookingListView: View {
             bookingList
           }
         }
+        .frame(maxHeight: .infinity)
       }
       .padding()
       .onAppear {
@@ -49,7 +51,7 @@ struct BookingListView: View {
   
   @ViewBuilder
   private var emptyView: some View {
-    VStack(spacing: 16) {
+    VStack(alignment: .center, spacing: 16) {
       Image(systemName: "ticket")
         .font(.system(size: 60))
         .foregroundColor(.gray)

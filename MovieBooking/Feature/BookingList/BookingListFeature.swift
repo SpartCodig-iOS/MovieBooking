@@ -11,6 +11,7 @@ import ComposableArchitecture
 @Reducer
 public struct BookingListFeature {
   @Dependency(\.fetchBookingsUseCase) var fetchBookingsUseCase
+  @Dependency(\.deleteBookingUseCase) var deleteBookingUseCase
 
   @ObservableState
   public struct State {
@@ -33,10 +34,12 @@ public struct BookingListFeature {
 
     public enum AsyncAction {
       case fetchBookingsResponse(Result<[BookingInfo], Error>)
+      case deleteBookingResponse(id: String, Result<Void, Error>)
     }
 
     public enum InnerAction {
       case fetchBookings
+      case deleteBooking(id: String)
     }
   }
 
@@ -73,9 +76,7 @@ extension BookingListFeature {
       return .send(.inner(.fetchBookings))
 
     case .deleteBooking(let id):
-      // TODO: DeleteBookingUseCase 구현 후 처리
-      state.bookings.removeAll { $0.id == id }
-      return .none
+      return .send(.inner(.deleteBooking(id: id)))
     }
   }
 
@@ -94,6 +95,15 @@ extension BookingListFeature {
       state.isLoading = false
       state.errorMessage = error.localizedDescription
       return .none
+
+    case .deleteBookingResponse(let id, .success):
+      // 로컬 상태에서 삭제
+      state.bookings.removeAll { $0.id == id }
+      return .none
+
+    case .deleteBookingResponse(_, .failure(let error)):
+      state.errorMessage = "삭제 실패: \(error.localizedDescription)"
+      return .none
     }
   }
 
@@ -110,6 +120,20 @@ extension BookingListFeature {
             .fetchBookingsResponse(
               Result {
                 try await fetchBookingsUseCase.execute()
+              }
+            )
+          )
+        )
+      }
+
+    case .deleteBooking(let id):
+      return .run { send in
+        await send(
+          .async(
+            .deleteBookingResponse(
+              id: id,
+              Result {
+                try await deleteBookingUseCase.execute(id: id)
               }
             )
           )
