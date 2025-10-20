@@ -1,30 +1,28 @@
 //
-//  Splash.swift
+//  MyPageFeature.swift
 //  MovieBooking
 //
-//  Created by Wonji Suh  on 10/14/25.
+//  Created by Wonji Suh  on 10/17/25.
 //
-
 
 import Foundation
 import ComposableArchitecture
-import SwiftUI
+import WeaveDI
 
 
 @Reducer
-public struct Splash {
+public struct MyPageFeature {
   public init() {}
 
   @ObservableState
-  public struct State: Equatable, Hashable {
-    
-    var fadeOut: Bool = false
-    var pulse: Bool = false
+  public struct State: Equatable {
+    @Shared(.inMemory("UserEntity")) var userEntity: UserEntity = .mockEmailUser
+    var appearPopUp: Bool = false
+
     public init() {}
   }
 
-  @CasePathable
-  public enum Action: ViewAction, Equatable, BindableAction {
+  public enum Action: ViewAction, BindableAction {
     case binding(BindingAction<State>)
     case view(View)
     case async(AsyncAction)
@@ -35,36 +33,34 @@ public struct Splash {
 
   //MARK: - ViewAction
   @CasePathable
-  public enum View : Equatable{
-    case onAppear
-    case startAnimation
-
+  public enum View {
+    case tapLogOut
+    case appearPopUp(Bool)
+    case closePopUp
   }
 
-
   //MARK: - AsyncAction 비동기 처리 액션
-  @CasePathable
   public enum AsyncAction: Equatable {
-
+    case logOutUser
   }
 
   //MARK: - 앱내에서 사용하는 액션
-  @CasePathable
   public enum InnerAction: Equatable {
-    case setPulse(Bool)
-    case setFadeOut(Bool)
   }
 
   //MARK: - NavigationAction
-  @CasePathable
   public enum NavigationAction: Equatable {
-    case presentLogin
-    case presentMain
-
+    case logOutComplete
 
   }
 
+  nonisolated enum MyPageCancelID: Hashable, Sendable {
+    case logOut
+  }
+
+  @Injected(AuthUseCase.self) var authUseCase
   @Dependency(\.continuousClock) var clock
+  @Dependency(\.mainQueue) var mainQueue
 
   public var body: some Reducer<State, Action> {
     BindingReducer()
@@ -89,23 +85,24 @@ public struct Splash {
   }
 }
 
-extension Splash {
+extension MyPageFeature {
   private func handleViewAction(
     state: inout State,
     action: View
   ) -> Effect<Action> {
     switch action {
-      case .onAppear:
-        return .send(.view(.startAnimation))
-
-      case .startAnimation:
+      case .tapLogOut:
         return .run { send in
-          await send(.inner(.setPulse(true)))
-
-          try await clock.sleep(for: .seconds(1.3))
-          await send(.inner(.setFadeOut(true)))
-          await send(.navigation(.presentLogin))
+          await send(.view(.appearPopUp(true)))
         }
+
+      case .appearPopUp(let bool):
+        state.appearPopUp = bool
+        return .none
+
+      case .closePopUp:
+        state.appearPopUp = false
+        return .none
     }
   }
 
@@ -114,7 +111,15 @@ extension Splash {
     action: AsyncAction
   ) -> Effect<Action> {
     switch action {
+      case .logOutUser:
+        return .run { send in
+          try await authUseCase.sessionLogOut()
+          await send(.view(.closePopUp))
+          try await clock.sleep(for: .seconds(0.4))
+          await send(.navigation(.logOutComplete))
 
+        }
+        .debounce(id: MyPageCancelID.logOut, for: 0.1, scheduler: mainQueue)
     }
   }
 
@@ -123,12 +128,7 @@ extension Splash {
     action: NavigationAction
   ) -> Effect<Action> {
     switch action {
-        // 로그인 안했을경우
-      case .presentLogin:
-        return .none
-
-        // 로그인 했을경우
-      case .presentMain:
+      case .logOutComplete:
         return .none
     }
   }
@@ -138,16 +138,20 @@ extension Splash {
     action: InnerAction
   ) -> Effect<Action> {
     switch action {
-      case .setPulse(let on):
-        state.pulse = on
-        return .none
 
-      case .setFadeOut(let on):
-        withAnimation(.easeInOut(duration: 3)) {
-          state.fadeOut = on
-        }
-        return .none
     }
   }
 }
 
+
+extension MyPageFeature.State: Hashable {
+  public static func == (lhs: MyPageFeature.State, rhs: MyPageFeature.State) -> Bool {
+    lhs.userEntity == rhs.userEntity &&
+    rhs.appearPopUp == lhs.appearPopUp
+  }
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(userEntity)
+    hasher.combine(appearPopUp)
+
+  }
+}

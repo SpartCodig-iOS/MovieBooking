@@ -11,9 +11,6 @@ struct NetworkLog {
     let id: String
     var requestLog: String?
     var responseLog: String?
-    var isComplete: Bool {
-        responseLog != nil
-    }
 }
 
 actor NetworkLogger {
@@ -37,7 +34,7 @@ actor NetworkLogger {
         log.responseLog = buildResponseLog(response, data: data, duration: duration, id: id)
         logBuffer[id] = log
         
-        if log.isComplete {
+        if log.responseLog != nil {
             printCompleteLog(log)
             logBuffer.removeValue(forKey: id)
         }
@@ -52,7 +49,7 @@ actor NetworkLogger {
         log.responseLog = buildErrorLog(error, duration: duration, id: id)
         logBuffer[id] = log
         
-        if log.isComplete {
+        if log.responseLog != nil {
             printCompleteLog(log)
             logBuffer.removeValue(forKey: id)
         }
@@ -85,7 +82,7 @@ actor NetworkLogger {
         
         if let body = request.httpBody {
             // 🎯 전체 JSON 출력 (제한 없음!)
-            if let jsonString = body.prettyPrintedJSON {
+            if let jsonString = prettyPrintedJSON(from: body) {
                 log += jsonString + "\n"
             } else if let bodyString = String(data: body, encoding: .utf8) {
                 log += bodyString + "\n"
@@ -113,7 +110,7 @@ actor NetworkLogger {
         log += "4️⃣ Data 확인하기\n"
         
         // 🎯 전체 JSON 출력 (제한 없음!)
-        if let jsonString = data.prettyPrintedJSON {
+        if let jsonString = prettyPrintedJSON(from: data) {
             log += jsonString + "\n"
         } else if let bodyString = String(data: data, encoding: .utf8) {
             log += bodyString + "\n"
@@ -184,12 +181,9 @@ actor NetworkLogger {
         default: return "❓"
         }
     }
-}
 
-
-extension Data {
-    var prettyPrintedJSON: String? {
-        guard let jsonObject = try? JSONSerialization.jsonObject(with: self, options: []),
+    private func prettyPrintedJSON(from data: Data) -> String? {
+        guard let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
               let prettyString = String(data: prettyData, encoding: .utf8) else {
             return nil

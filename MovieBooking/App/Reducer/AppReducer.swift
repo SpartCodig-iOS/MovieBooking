@@ -6,16 +6,16 @@
 //
 
 import ComposableArchitecture
+import SwiftUI
 
 @Reducer
 struct AppReducer {
 
   @ObservableState
   enum State {
-    case splash(Splash.State)
+    case splash(SplashFeature.State)
     case auth(AuthCoordinator.State)
-
-
+    case mainTab(MainTabFeature.State)
 
     init() {
       self = .splash(.init())
@@ -33,19 +33,20 @@ struct AppReducer {
     case presentMain
   }
 
-
   @CasePathable
   enum ScopeAction {
-    case splash(Splash.Action)
+    case splash(SplashFeature.Action)
     case auth(AuthCoordinator.Action)
+    case mainTab(MainTabFeature.Action)
   }
+
 
   @Dependency(\.continuousClock) var clock
 
   public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
-      case .view(let viewAction):
+        case .view(let viewAction):
           return handleViewAction(&state, action: viewAction)
 
         case .scope(let scopeAction):
@@ -53,10 +54,13 @@ struct AppReducer {
       }
     }
     .ifCaseLet(\.splash, action: \.scope.splash) {
-      Splash()
+      SplashFeature()
     }
     .ifCaseLet(\.auth, action: \.scope.auth) {
       AuthCoordinator()
+    }
+    .ifCaseLet(\.mainTab, action: \.scope.mainTab) {
+      MainTabFeature()
     }
   }
 }
@@ -67,14 +71,14 @@ extension AppReducer {
     action: View
   ) -> Effect<Action> {
     switch action {
-      // MARK: - 로그인 화면으로
-    case .presentAuth:
-      state = .auth(.init())
-      return .none
+        // MARK: - 로그인 화면으로
+      case .presentAuth:
+        state = .auth(.init())
+        return .none
 
-    case .presentMain:
-      return .none
-
+      case .presentMain:
+        state = .mainTab(.init())
+        return .send(.scope(.mainTab(.scope(.movieList(.fetchMovie)))))
     }
   }
 
@@ -85,27 +89,26 @@ extension AppReducer {
   ) -> Effect<Action> {
     switch action {
       case .splash(.navigation(.presentLogin)):
-      return .run { send in
-        try await clock.sleep(for: .seconds(1))
-        await send(.view(.presentAuth))
-      }
+        return .run { send in
+          try await clock.sleep(for: .seconds(1))
+          await send(.view(.presentAuth))
+        }
 
-    case .splash(.navigation(.presentMain)):
-      return .run { send in
-        try await clock.sleep(for: .seconds(1))
-        await send(.view(.presentMain))
-      }
+      case .splash(.navigation(.presentMain)):
+        return .run { send in
+          try await clock.sleep(for: .seconds(1))
+          await send(.view(.presentMain))
+        }
 
+      case .auth(.navigation(.presentMain)):
+        return .send(.view(.presentMain), animation: .easeIn)
 
-//    case .auth(.navigation(.presentMain)):
-//      return .send(.view(.presentMain))
-//
-//    case .auth(.navigation(.presentMain)):
-//      return .send(.view(.presentMain))
+      case .mainTab(.navigation(.backToLogin)):
+        return .run { send in
+          await send(.view(.presentAuth), animation: .easeIn)
+        }
+      default: return .none
 
-
-    default:
-      return .none
     }
   }
 }
