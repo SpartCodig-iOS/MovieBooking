@@ -9,8 +9,8 @@ import Foundation
 import WeaveDI
 import ComposableArchitecture
 import AuthenticationServices
-import Supabase
 import LogMacro
+import Supabase
 
 public struct AuthUseCase: AuthUseCaseProtocol {
   private let repository: AuthRepositoryProtocol
@@ -44,7 +44,6 @@ public struct AuthUseCase: AuthUseCaseProtocol {
     // 3. 로깅 (비즈니스 관심사)
     #logDebug("회원가입 완료 → \(userEntity.email ?? "unknown")")
 
-    // 4. 도메인 객체 반환
     return userEntity
   }
 
@@ -92,6 +91,7 @@ public struct AuthUseCase: AuthUseCaseProtocol {
     // 5. 비즈니스 규칙: userId 주입
     var userEntity = session
     userEntity.userId = overrideLoginId
+
     return userEntity
   }
 
@@ -101,27 +101,12 @@ public struct AuthUseCase: AuthUseCaseProtocol {
 
   // MARK: - 세션 관리
 
-  public func checkSession() async throws -> UserEntity {
-    return try await sessionUseCase.checkSession()
-  }
-
   public func checkUserExists(userId: UUID) async throws -> Bool {
     return try await repository.checkUserExists(userId: userId)
   }
 
-  public func isTokenExpiringSoon(
-    _ session: Session,
-    threshold: TimeInterval = 60
-  ) -> Bool {
-    return sessionUseCase.isTokenExpiringSoon(session, threshold: threshold)
-  }
-
   public func sessionLogOut() async throws {
     try await repository.signOut()
-  }
-
-  public func refreshSession() async throws -> UserEntity {
-    return try await sessionUseCase.refreshSession()
   }
 }
 
@@ -133,7 +118,10 @@ extension AuthUseCase: DependencyKey {
     let sessionRepository = UnifiedDI.resolve(SessionRepositoryProtocol.self) ?? SessionRepository()
     let sessionUseCase = UnifiedDI.resolve(SessionUseCaseProtocol.self)
       ?? SessionUseCase(repository: sessionRepository)
-    return AuthUseCase(repository: repository, sessionUseCase: sessionUseCase)
+    return AuthUseCase(
+      repository: repository,
+      sessionUseCase: sessionUseCase
+    )
   }()
 }
 
@@ -159,7 +147,10 @@ extension RegisterModule {
             repository: UnifiedDI.resolve(SessionRepositoryProtocol.self)
               ?? SessionRepository()
           )
-        return AuthUseCase(repository: repo, sessionUseCase: sessionUseCase)
+        return AuthUseCase(
+          repository: repo,
+          sessionUseCase: sessionUseCase
+        )
       }
     )
   }
@@ -169,4 +160,5 @@ extension RegisterModule {
       AuthRepository()
     }
   }
+
 }

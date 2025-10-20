@@ -30,6 +30,13 @@ public struct LoginFeature {
     var loginId : String = ""
     var loginPassword: String = "" 
 
+    @Shared(.appStorage("lastLoginUserId"))
+    var lastLoginUserId: String = ""
+    @Shared(.appStorage("lastLoginEmail"))
+    var lastLoginEmail: String = ""
+    @Shared(.appStorage("lastLoginProvider"))
+    var lastLoginProviderRaw: String = SocialType.none.rawValue
+
 
     @Shared var userEntity: UserEntity
     @Shared(.appStorage("isSaveUserId"))
@@ -39,6 +46,11 @@ public struct LoginFeature {
 
     var isEnable: Bool {
       !loginId.isEmpty && !loginPassword.isEmpty
+    }
+
+    var lastLoginProvider: SocialType {
+      get { SocialType(rawValue: lastLoginProviderRaw) ?? .none }
+      set { $lastLoginProviderRaw.withLock { $0 = newValue.rawValue } }
     }
 
 
@@ -53,6 +65,9 @@ public struct LoginFeature {
       } else {
         self.$loginId.withLock { $0 = "" }
       }
+
+      let provider = lastLoginProvider
+      self.socialType = provider == .none ? nil : provider
     }
   }
 
@@ -63,9 +78,6 @@ public struct LoginFeature {
     case async(AsyncAction)
     case inner(InnerAction)
     case navigation(NavigationAction)
-    case showErrorPopUp(Bool)
-    case loginId(String)
-    case loginPassword(String)
 
   }
 
@@ -102,7 +114,6 @@ public struct LoginFeature {
 
 
   nonisolated enum LoginCancelID: Hashable, Sendable {
-    case session
     case apple
     case social
     case normal
@@ -124,14 +135,6 @@ public struct LoginFeature {
         case .binding(_):
           return .none
 
-        case let .loginId(id):
-          state.$loginId.withLock { $0 = id }
-          return .none
-
-        case let .loginPassword(password):
-          state.loginPassword = password
-          return .none
-
         case .view(let viewAction):
           return handleViewAction(state: &state, action: viewAction)
 
@@ -144,9 +147,6 @@ public struct LoginFeature {
         case .navigation(let navigationAction):
           return handleNavigationAction(state: &state, action: navigationAction)
 
-        case let .showErrorPopUp(popup):
-          state.showErrorPopUp = popup
-          return .none
       }
     }
   }
@@ -220,20 +220,9 @@ extension LoginFeature {
         .debounce(id: LoginCancelID.social, for: 0.1, scheduler: mainQueue)
 
       case .fetchLastLoginSession:
-        return .run {  send in
-          let sessionResult = await Result {
-            try await oAuthUseCase.fetchCurrentSocialType()
-          }
-
-          switch sessionResult {
-            case .success(let sessionData):
-              await send(.inner(.setSocialType(sessionData)))
-
-            case .failure(let error):
-              #logDebug("세션 정보 가져오기 실패", error.localizedDescription)
-          }
-        }
-        .debounce(id: LoginCancelID.session, for: 0.1, scheduler: mainQueue)
+        let provider = state.lastLoginProvider
+        state.socialType = provider == .none ? nil : provider
+        return .none
 
       case .normalLogin:
         return .run { [
@@ -286,7 +275,11 @@ extension LoginFeature {
         return .none
 
       case .setUser(let userEnity):
-        state.$userEntity.withLock { $0 = userEnity}
+        state.$userEntity.withLock { $0 = userEnity }
+        state.$lastLoginUserId.withLock { $0 = userEnity.userId }
+        state.$lastLoginEmail.withLock { $0 = userEnity.email ?? "" }
+        state.lastLoginProvider = userEnity.provider
+        state.socialType = userEnity.provider == .none ? state.socialType : userEnity.provider
         #logDebug("로그인 성공", state.userEntity)
         return .none
 
@@ -313,6 +306,9 @@ extension LoginFeature.State: Hashable {
     lhs.loginPassword == rhs.loginPassword &&
     lhs.saveUserId == rhs.saveUserId &&
     lhs.authErrorMesage == rhs.authErrorMesage &&
+    lhs.lastLoginUserId == rhs.lastLoginUserId &&
+    lhs.lastLoginEmail == rhs.lastLoginEmail &&
+    lhs.lastLoginProviderRaw == rhs.lastLoginProviderRaw &&
     lhs.isEnable == rhs.isEnable
   }
   public func hash(into hasher: inout Hasher) {
@@ -325,6 +321,9 @@ extension LoginFeature.State: Hashable {
     hasher.combine(loginPassword)
     hasher.combine(saveUserId)
     hasher.combine(authErrorMesage)
+    hasher.combine(lastLoginUserId)
+    hasher.combine(lastLoginEmail)
+    hasher.combine(lastLoginProviderRaw)
     hasher.combine(isEnable)
   }
 }

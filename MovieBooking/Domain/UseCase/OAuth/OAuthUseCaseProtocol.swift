@@ -24,8 +24,4 @@ public protocol OAuthUseCaseProtocol: Sendable {
   /// - 소셜 로그인 → 세션 대기 → 로깅 → 사용자 정보 반환
   func signInWithSocial(type: SocialType) async throws -> UserEntity
 
-  // MARK: - 세션 관리
-
-  /// 현재 로그인된 소셜 타입 조회 (기존과 동일한 동작)
-  func fetchCurrentSocialType() async throws -> SocialType?
 }

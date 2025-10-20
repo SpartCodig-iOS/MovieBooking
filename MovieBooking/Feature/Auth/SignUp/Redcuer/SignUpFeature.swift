@@ -19,6 +19,9 @@ public struct SignUpFeature {
   public struct State: Equatable {
 
     @Shared(.inMemory("UserEntity")) var userEntity: UserEntity = .init()
+    @Shared(.appStorage("lastLoginUserId")) var lastLoginUserId: String = ""
+    @Shared(.appStorage("lastLoginEmail")) var lastLoginEmail: String = ""
+    @Shared(.appStorage("lastLoginProvider")) var lastLoginProviderRaw: String = SocialType.none.rawValue
 
     var userPassword: String = ""
     var checkPassword: String = ""
@@ -40,6 +43,11 @@ public struct SignUpFeature {
 
     var isEnable: Bool {
       !userEmail.isEmpty && !userName.isEmpty  && !userPassword.isEmpty && userPassword == checkPassword
+    }
+
+    var lastLoginProvider: SocialType {
+      get { SocialType(rawValue: lastLoginProviderRaw) ?? .none }
+      set { $lastLoginProviderRaw.withLock { $0 = newValue.rawValue } }
     }
 
     public init() {
@@ -193,6 +201,9 @@ extension SignUpFeature {
 
       case .setUser(let userEntity):
         state.$userEntity.withLock { $0 = userEntity }
+        state.$lastLoginUserId.withLock { $0 = userEntity.userId }
+        state.$lastLoginEmail.withLock { $0 = userEntity.email ?? "" }
+        state.lastLoginProvider = userEntity.provider
         return .none
     }
   }
@@ -211,13 +222,19 @@ extension SignUpFeature.State: Hashable {
     lhs.passwordError == rhs.passwordError &&
     lhs.checkPasswordError == rhs.checkPasswordError &&
     lhs.showAlert == rhs.showAlert &&
-    lhs.isSuccessSignUp == rhs.isSuccessSignUp
+    lhs.isSuccessSignUp == rhs.isSuccessSignUp &&
+    lhs.lastLoginUserId == rhs.lastLoginUserId &&
+    lhs.lastLoginEmail == rhs.lastLoginEmail &&
+    lhs.lastLoginProviderRaw == rhs.lastLoginProviderRaw
   }
   public func hash(into hasher: inout Hasher) {
     hasher.combine(userEmail)
     hasher.combine(userPassword)
     hasher.combine(checkPassword)
     hasher.combine(userName)
+    hasher.combine(lastLoginUserId)
+    hasher.combine(lastLoginEmail)
+    hasher.combine(lastLoginProviderRaw)
     hasher.combine(authError)
     hasher.combine(authErrorMesage)
     hasher.combine(userNameError)
