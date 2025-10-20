@@ -21,6 +21,7 @@ public struct MainTabFeature {
     var movieList = MovieListFeature.State()
     var movieSearch = MovieSearchFeature.State()
     var myPage = MyPageFeature.State()
+    var ticket = BookingListFeature.State()
 
     public init() {}
   }
@@ -41,6 +42,7 @@ public struct MainTabFeature {
     case movieList(MovieListFeature.Action)
     case movieSearch(MovieSearchFeature.Action)
     case myPage(MyPageFeature.Action)
+    case ticket(BookingListFeature.Action)
   }
 
 
@@ -70,6 +72,9 @@ public struct MainTabFeature {
     }
     Scope(state: \.myPage, action: \.scope.myPage) {
       MyPageFeature()
+    }
+    Scope(state: \.ticket, action: \.scope.ticket) {
+      BookingListFeature()
     }
   }
 }

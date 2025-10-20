@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct BookingInfo: Identifiable, Codable, Equatable {
-  let id: String
+public struct BookingInfo: Identifiable, Codable, Equatable {
+  public let id: String
   let movieId: String
   let movieTitle: String
   let posterPath: String
@@ -20,7 +20,7 @@ struct BookingInfo: Identifiable, Codable, Equatable {
   let totalPrice: Int
   let bookedAt: Date        // 예매한 날짜
 
-  init(
+  public init(
     id: String = UUID().uuidString,
     movieId: String,
     movieTitle: String,

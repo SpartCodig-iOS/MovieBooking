@@ -9,38 +9,38 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-struct BookingListFeature {
+public struct BookingListFeature {
   @Dependency(\.fetchBookingsUseCase) var fetchBookingsUseCase
 
   @ObservableState
-  struct State {
+  public struct State {
     var bookings: [BookingInfo] = []
     var isLoading: Bool = false
     var errorMessage: String?
   }
 
-  enum Action: ViewAction, BindableAction {
+  public enum Action: ViewAction, BindableAction {
     case binding(BindingAction<State>)
     case view(ViewAction)
     case async(AsyncAction)
     case inner(InnerAction)
 
-    enum ViewAction {
+    public enum ViewAction {
       case onAppear
       case refreshButtonTapped
       case deleteBooking(id: String)
     }
 
-    enum AsyncAction {
+    public enum AsyncAction {
       case fetchBookingsResponse(Result<[BookingInfo], Error>)
     }
 
-    enum InnerAction {
+    public enum InnerAction {
       case fetchBookings
     }
   }
 
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
       switch action {

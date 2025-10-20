@@ -22,7 +22,7 @@ struct MainTabView: View {
           .tabItem { Label("search", systemImage: "magnifyingglass") }
           .tag(MainTab.book)
 
-        ContentView()
+        BookingListView(store: self.store.scope(state: \.ticket, action: \.scope.ticket))
           .tabItem { Label("티켓", systemImage: "qrcode") }
           .tag(MainTab.tickets)
 
