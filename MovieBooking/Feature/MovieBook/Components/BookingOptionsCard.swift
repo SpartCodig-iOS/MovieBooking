@@ -8,34 +8,43 @@
 import SwiftUI
 
 struct BookingOptionsCard: View {
-  let theaters: [String]
-  let times: [String]
-  @Binding var selectedTheater: String
-  @Binding var selectedTime: String
+  let theaters: [MovieTheater]
+  let showTimes: [ShowTime]
+  @Binding var selectedTheater: MovieTheater?
+  @Binding var selectedShowTime: ShowTime?
   @Binding var numberOfPeople: Int
 
   var body: some View {
     VStack(spacing: 20) {
       // 극장 선택
-      CustomPickerRow(
+      SelectionListView(
         title: "극장",
-        selection: $selectedTheater,
-        options: theaters
+        items: theaters,
+        selectedItem: selectedTheater,
+        onSelect: { selectedTheater = $0 },
+        placeholder: "극장을 선택해주세요",
+        displayText: { $0.name }
       )
 
       // 상영시간 선택
-      CustomPickerRow(
+      SelectionListView(
         title: "상영시간",
-        selection: $selectedTime,
-        options: times
+        items: showTimes,
+        selectedItem: selectedShowTime,
+        onSelect: { selectedShowTime = $0 },
+        placeholder: "상영시간을 선택해주세요",
+        displayText: { "\($0.displayShortDate) \($0.time)" }
       )
+      .disabled(selectedTheater == nil)
+      .opacity(selectedTheater == nil ? 0.5 : 1.0)
 
       // 인원수 선택
-      CustomPickerRow(
+      SelectionListView(
         title: "인원수",
-        selection: $numberOfPeople,
-        options: Array(1...10),
-        displayFormatter: { "\($0)명" }
+        items: Array(1...10),
+        selectedItem: numberOfPeople,
+        onSelect: { numberOfPeople = $0 },
+        displayText: { "\($0)명" }
       )
     }
     .padding(20)
@@ -45,79 +54,34 @@ struct BookingOptionsCard: View {
   }
 }
 
-// MARK: - Custom Picker Row
-fileprivate struct CustomPickerRow<T: Hashable>: View {
-  let title: String
-  @Binding var selection: T
-  let options: [T]
-  var displayFormatter: ((T) -> String)?
-
-  var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text(title)
-        .font(.system(size: 16, weight: .semibold))
-
-      Menu {
-        ForEach(options, id: \.self) { option in
-          Button {
-            selection = option
-          } label: {
-            HStack {
-              Text(displayText(for: option))
-              if selection == option {
-                Spacer()
-                Image(systemName: "checkmark")
-                  .foregroundColor(.basicPurple)
-              }
-            }
-          }
-        }
-      } label: {
-        HStack {
-          Text(displayText(for: selection))
-            .foregroundColor(.primary)
-            .font(.system(size: 16))
-
-          Spacer()
-
-          Image(systemName: "chevron.down")
-            .font(.system(size: 14))
-            .foregroundColor(.secondary)
-        }
-        .padding(14)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .overlay(
-          RoundedRectangle(cornerRadius: 14)
-            .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-        )
-      }
-    }
-  }
-
-  private func displayText(for option: T) -> String {
-    if let formatter = displayFormatter {
-      return formatter(option)
-    }
-    return "\(option)"
-  }
-}
-
+// MARK: - Preview
 #Preview {
   BookingOptionsCardPreview()
 }
 
 private struct BookingOptionsCardPreview: View {
-  @State var selectedTheater = "CGV 강남"
-  @State var selectedTime = "14:30"
+  @State var selectedTheater: MovieTheater? = MovieTheater(id: 1, name: "CGV 강남")
+  @State var selectedShowTime: ShowTime? = ShowTime(date: Date(), time: "14:30")
   @State var numberOfPeople = 1
 
   var body: some View {
     BookingOptionsCard(
-      theaters: ["CGV 강남", "메가박스 코엑스", "롯데시네마 월드타워", "CGV 용산"],
-      times: ["10:00", "12:30", "14:30", "17:00", "19:30", "22:00"],
+      theaters: [
+        MovieTheater(id: 1, name: "CGV 강남"),
+        MovieTheater(id: 2, name: "메가박스 코엑스"),
+        MovieTheater(id: 3, name: "롯데시네마 월드타워"),
+        MovieTheater(id: 4, name: "CGV 용산")
+      ],
+      showTimes: [
+        ShowTime(date: Date(), time: "10:00"),
+        ShowTime(date: Date(), time: "12:30"),
+        ShowTime(date: Date(), time: "14:30"),
+        ShowTime(date: Date(), time: "17:00"),
+        ShowTime(date: Date(), time: "19:30"),
+        ShowTime(date: Date(), time: "22:00")
+      ],
       selectedTheater: $selectedTheater,
-      selectedTime: $selectedTime,
+      selectedShowTime: $selectedShowTime,
       numberOfPeople: $numberOfPeople
     )
     .padding()
