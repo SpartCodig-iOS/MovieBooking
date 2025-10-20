@@ -85,6 +85,18 @@ extension MainTabFeature {
     action: ScopeAction
   ) -> Effect<Action> {
     switch action {
+      case let .movieList(.fetchNowPlayingResponse(.success(movies))):
+        state.movieSearch.nowPlayingMovies = movies
+        return .none
+
+      case let .movieList(.fetchUpcomingResponse(.success(movies))):
+        state.movieSearch.upcomingMovies = movies
+        return .none
+
+      case let .movieList(.fetchPopularResponse(.success(movies))):
+        state.movieSearch.popularMovies = movies
+        return .none
+
       case .myPage(.navigation(.logOutComplete)):
         return .send(.navigation(.backToLogin), animation: .easeIn)
 
