@@ -11,7 +11,7 @@ import ComposableArchitecture
 @ViewAction(for: MovieDetailFeature.self)
 struct MovieDetailView: View {
   @Perception.Bindable var store: StoreOf<MovieDetailFeature>
-
+  
   var body: some View {
     Group {
       if store.isLoading {
@@ -22,9 +22,12 @@ struct MovieDetailView: View {
             if let path = movieDetail.posterPath {
               MoviePosterView(posterPath: path)
             }
-
-            MovieDetailCardView(model: movieDetail)
-              .padding(.horizontal, 24)
+            
+            MovieDetailCardView(model: movieDetail) {
+              guard let model = store.movieDetail else { return }
+              send(.onTapBookButton(model))
+            }
+            .padding(.horizontal, 24)
           }
         }
       } else {

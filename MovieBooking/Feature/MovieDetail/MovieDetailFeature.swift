@@ -10,42 +10,43 @@ import ComposableArchitecture
 import SwiftUI
 
 @Reducer
-struct MovieDetailFeature {
+public struct MovieDetailFeature {
   @Dependency(\.fetchMovieDetailUseCase) var fetchMovieDetailUseCase
-  
+  public init() {}
   @ObservableState
-  struct State {
+  public struct State: Equatable {
     let movieId: Int
     var movieDetail: MovieDetail?
     var isLoading: Bool = false
     @Presents var alert: AlertState<Action.Alert>?
   }
 
-  enum Action: ViewAction {
+  public enum Action: ViewAction {
     case view(ViewAction)
     case async(AsyncAction)
     case inner(InnerAction)
     case alert(PresentationAction<Alert>)
 
-    enum ViewAction {
+    public enum ViewAction {
       case onAppear
+      case onTapBookButton(MovieDetail)
     }
 
-    enum AsyncAction {
+    public enum AsyncAction {
       case fetchMovieDetail
     }
 
-    enum InnerAction {
+    public enum InnerAction {
       case fetchSuccess(MovieDetail)
       case fetchFailure(Error)
     }
 
-    enum Alert {
+    public enum Alert {
       case confirmDismiss
     }
   }
   
-  var body: some Reducer<State, Action> {
+  public var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case .view(let viewAction):
@@ -75,6 +76,8 @@ extension MovieDetailFeature {
     switch action {
     case .onAppear:
       return .send(.async(.fetchMovieDetail))
+    case .onTapBookButton:
+      return .none
     }
   }
 
@@ -138,4 +141,13 @@ extension MovieDetailFeature {
         return .none
       }
     }
+}
+
+extension MovieDetailFeature.State: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(movieId)
+    hasher.combine(movieDetail)
+    hasher.combine(isLoading)
+    // @Presents var alert는 Hashable이 아니므로 제외
+  }
 }

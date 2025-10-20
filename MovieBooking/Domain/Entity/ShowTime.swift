@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct ShowTime: Identifiable, Codable, Sendable {
-  let id: String
+public struct ShowTime: Identifiable, Codable, Sendable, Hashable {
+  public let id: String
   let date: Date
   let time: String
 
-  init(id: String = UUID().uuidString, date: Date, time: String) {
+  public init(id: String = UUID().uuidString, date: Date, time: String) {
     self.id = id
     self.date = date
     self.time = time
@@ -54,7 +54,7 @@ struct ShowTime: Identifiable, Codable, Sendable {
 }
 
 extension ShowTime: Equatable {
-  nonisolated static func == (lhs: ShowTime, rhs: ShowTime) -> Bool {
+  nonisolated public static func == (lhs: ShowTime, rhs: ShowTime) -> Bool {
     lhs.id == rhs.id && lhs.date == rhs.date && lhs.time == rhs.time
   }
 }

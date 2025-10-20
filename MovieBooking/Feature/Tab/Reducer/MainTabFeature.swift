@@ -18,7 +18,7 @@ public struct MainTabFeature {
 
     var selectTab: MainTab = .home
 
-    var movieList = MovieListFeature.State()
+    var movieCoordinator = MovieListCoordinator.State()
     var movieSearch = MovieSearchFeature.State()
     var myPage = MyPageFeature.State()
     var ticket = BookingListFeature.State()
@@ -39,7 +39,7 @@ public struct MainTabFeature {
 
   @CasePathable
   public enum ScopeAction {
-    case movieList(MovieListFeature.Action)
+    case movieCoordinator(MovieListCoordinator.Action)
     case movieSearch(MovieSearchFeature.Action)
     case myPage(MyPageFeature.Action)
     case ticket(BookingListFeature.Action)
@@ -64,8 +64,8 @@ public struct MainTabFeature {
           return handleNavigationAction(state: &state, action: navigationAction)
       }
     }
-    Scope(state: \.movieList, action: \.scope.movieList) {
-      MovieListFeature()
+    Scope(state: \.movieCoordinator, action: \.scope.movieCoordinator) {
+      MovieListCoordinator()
     }
     Scope(state: \.movieSearch, action: \.scope.movieSearch) {
       MovieSearchFeature()

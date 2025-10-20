@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct MovieDetail {
+public struct MovieDetail: Equatable, Hashable, Sendable {
+  let id: Int
   let title: String
   let genres: [Genre]  // 배열로 변경
   let releaseDate: Date?
@@ -17,7 +18,8 @@ struct MovieDetail {
   let summary: String
   let ticketPrice: Int  // 티켓 가격
 
-  init(
+  public init(
+    id: Int,
     title: String,
     genres: [Genre],  // 배열로 변경
     releaseDate: String,
@@ -30,6 +32,7 @@ struct MovieDetail {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd"
 
+    self.id = id
     self.title = title
     self.genres = genres
     self.releaseDate = dateFormatter.date(from: releaseDate)
@@ -41,13 +44,14 @@ struct MovieDetail {
   }
 }
 
-struct Genre {
+public struct Genre: Equatable, Hashable, Sendable {
   let id: String
   let name: String
 }
 
 extension MovieDetail {
   static let mockData: MovieDetail = MovieDetail(
+    id: 1,
     title: "The Shawshank Redemption",
     genres: [
       Genre(id: "18", name: "드라마"),

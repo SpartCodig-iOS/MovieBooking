@@ -78,7 +78,8 @@ extension AppReducer {
 
       case .presentMain:
         state = .mainTab(.init())
-        return .send(.scope(.mainTab(.scope(.movieList(.fetchMovie)))))
+//      return .send(.scope(.mainTab(.scope(.movieCoordinator))))
+      return .none
     }
   }
 
