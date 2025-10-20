@@ -11,7 +11,7 @@ import ComposableArchitecture
 
 struct AppView: View {
   var store: StoreOf<AppReducer>
-  
+
   var body: some View {
     SwitchStore(store) { state in
       switch state {
@@ -19,12 +19,12 @@ struct AppView: View {
           if let store = store.scope(state: \.splash, action: \.scope.splash) {
             SplashView(store: store)
           }
-          
+
         case .auth:
           if let store = store.scope(state: \.auth, action: \.scope.auth) {
             AuthCoordinatorView(store: store)
           }
-          
+
         case .mainTab:
           if let store = store.scope(state: \.mainTab, action: \.scope.mainTab) {
             MainTabView(store: store)
