@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ShowTime: Identifiable, Codable, Equatable {
+struct ShowTime: Identifiable, Codable, Sendable {
   let id: String
   let date: Date
   let time: String
@@ -50,5 +50,11 @@ struct ShowTime: Identifiable, Codable, Equatable {
   /// 전체 표시 (예: "2025년 10월 20일 14:30")
   var fullDisplay: String {
     "\(displayDate) \(time)"
+  }
+}
+
+extension ShowTime: Equatable {
+  nonisolated static func == (lhs: ShowTime, rhs: ShowTime) -> Bool {
+    lhs.id == rhs.id && lhs.date == rhs.date && lhs.time == rhs.time
   }
 }

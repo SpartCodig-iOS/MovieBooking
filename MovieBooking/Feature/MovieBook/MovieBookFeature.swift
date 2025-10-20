@@ -7,7 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
-internal import SwiftUICore
+import SwiftUI
 
 @Reducer
 struct MovieBookFeature {
@@ -16,7 +16,7 @@ struct MovieBookFeature {
   @Dependency(\.createBookingUseCase) var createBookingUseCase
 
   @ObservableState
-  struct State {
+  struct State: Equatable, Sendable {
     let movieId: String
     let posterPath: String
     let title: String
@@ -62,7 +62,7 @@ struct MovieBookFeature {
     }
   }
 
-  var body: some ReducerOf<Self> {
+  var body: some Reducer<State, Action>{
     BindingReducer()
     Reduce { state, action in
       switch action {

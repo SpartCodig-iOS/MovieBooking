@@ -7,7 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
-internal import SwiftUICore
+import SwiftUI
 
 @Reducer
 struct MovieDetailFeature {
@@ -45,7 +45,7 @@ struct MovieDetailFeature {
     }
   }
   
-  var body: some ReducerOf<Self> {
+  var body: some Reducer<State, Action> {
     Reduce { state, action in
       switch action {
       case .view(let viewAction):

@@ -7,7 +7,13 @@
 
 import Foundation
 
-struct MovieTheater: Identifiable, Equatable {
+struct MovieTheater: Identifiable, Sendable {
   let id: Int
   let name: String
+}
+
+extension MovieTheater: Equatable {
+  nonisolated static func == (lhs: MovieTheater, rhs: MovieTheater) -> Bool {
+    lhs.id == rhs.id && lhs.name == rhs.name
+  }
 }

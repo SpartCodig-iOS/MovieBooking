@@ -114,15 +114,26 @@ public struct AuthUseCase: AuthUseCaseProtocol {
 
 extension AuthUseCase: DependencyKey {
   public static var liveValue: AuthUseCaseProtocol = {
-    let repository = UnifiedDI.resolve(AuthRepositoryProtocol.self) ?? AuthRepository()
-    let sessionRepository = UnifiedDI.resolve(SessionRepositoryProtocol.self) ?? SessionRepository()
+    let repository = UnifiedDI.resolve(AuthRepositoryProtocol.self)
+      ?? UnifiedDI.register(AuthRepositoryProtocol.self) {
+        AuthRepository()
+      }
+
+    let sessionRepository = UnifiedDI.resolve(SessionRepositoryProtocol.self)
+      ?? UnifiedDI.register(SessionRepositoryProtocol.self) {
+        SessionRepository()
+      }
+
     let sessionUseCase = UnifiedDI.resolve(SessionUseCaseProtocol.self)
-      ?? SessionUseCase(repository: sessionRepository)
+      ?? UnifiedDI.register(SessionUseCaseProtocol.self) {
+        SessionUseCase(repository: sessionRepository)
+      }
     return AuthUseCase(
       repository: repository,
       sessionUseCase: sessionUseCase
     )
   }()
+
 }
 
 @AutoSyncExtension

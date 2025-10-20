@@ -73,10 +73,15 @@ public struct SessionUseCase: SessionUseCaseProtocol {
 
 extension SessionUseCase: DependencyKey {
   public static var liveValue: SessionUseCaseProtocol = {
-    let repository = UnifiedDI.register(SessionRepositoryProtocol.self) {
-      SessionRepository()
-    }
-    return SessionUseCase(repository: repository)
+    let repository = UnifiedDI.resolve(SessionRepositoryProtocol.self)
+      ?? UnifiedDI.register(SessionRepositoryProtocol.self) {
+        SessionRepository()
+      }
+
+    return UnifiedDI.resolve(SessionUseCaseProtocol.self)
+      ?? UnifiedDI.register(SessionUseCaseProtocol.self) {
+        SessionUseCase(repository: repository)
+      }
   }()
 }
 
