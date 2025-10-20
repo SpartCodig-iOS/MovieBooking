@@ -10,26 +10,31 @@ import ComposableArchitecture
 
 struct MainTabView: View {
   @Perception.Bindable var store: StoreOf<MainTabFeature>
-
+  
   var body: some View {
     WithPerceptionTracking {
       TabView(selection: $store.selectTab) {
-        MovieListView(store: self.store.scope(state: \.movieList, action: \.scope.movieList))
-          .tabItem { Label("홈", systemImage: "house") }
-              .tag(MainTab.home)
-
+        MovieListCoordinatorView(
+          store: self.store.scope(
+            state: \.movieCoordinator,
+            action: \.scope.movieCoordinator
+          )
+        )
+        .tabItem { Label("홈", systemImage: "house") }
+        .tag(MainTab.home)
+        
         MovieSearchView(store: self.store.scope(state: \.movieSearch, action: \.scope.movieSearch))
           .tabItem { Label("search", systemImage: "magnifyingglass") }
           .tag(MainTab.book)
-
+        
         BookingListView(store: self.store.scope(state: \.ticket, action: \.scope.ticket))
           .tabItem { Label("티켓", systemImage: "qrcode") }
           .tag(MainTab.tickets)
-
+        
         MyPageView(store: self.store.scope(state: \.myPage, action: \.scope.myPage))
           .tabItem { Label("마이", systemImage: "person") }
           .tag(MainTab.my)
-
+        
       }
       .tint(.indigo500)
     }

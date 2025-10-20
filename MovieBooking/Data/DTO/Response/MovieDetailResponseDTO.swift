@@ -34,6 +34,7 @@ struct GenreDTO: Decodable {
 extension MovieDetailResponseDTO {
   func toDomain() -> MovieDetail {
     return MovieDetail(
+      id: self.id,
       title: self.title,
       genres: self.genres.map { $0.toDomain() },  // 배열 전체 매핑
       releaseDate: releaseDate,

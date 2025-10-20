@@ -14,7 +14,7 @@ public struct MovieListFeature {
   @Dependency(\.movieRepository) var movieRepository
 
   @ObservableState
-  public struct State {
+  public struct State: Equatable {
     var nowPlayingMovies: [Movie] = []
     var upcomingMovies: [Movie] = []
     var popularMovies: [Movie] = []
@@ -28,7 +28,7 @@ public struct MovieListFeature {
     case fetchNowPlayingResponse(Result<[Movie], Error>)
     case fetchUpcomingResponse(Result<[Movie], Error>)
     case fetchPopularResponse(Result<[Movie], Error>)
-    case selectMovie
+    case selectMovie(id: Int)
     case alert(PresentationAction<Alert>)
 
     public enum Alert: Equatable {
@@ -121,7 +121,6 @@ public struct MovieListFeature {
         return .none
 
       case .selectMovie:
-        //TODO: 상세로 넘어감
         return .none
 
       case .alert(.presented(.retry)):
@@ -131,5 +130,15 @@ public struct MovieListFeature {
         return .none
       }
     }
+  }
+}
+
+extension MovieListFeature.State: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(nowPlayingMovies)
+    hasher.combine(upcomingMovies)
+    hasher.combine(popularMovies)
+    hasher.combine(isLoading)
+    // @Presents var alert는 Hashable이 아니므로 제외
   }
 }

@@ -9,9 +9,11 @@ import SwiftUI
 
 struct MovieDetailCardView: View {
   private let model: MovieDetail
+  private var onTapAction: (() -> Void)?
   
-  init(model: MovieDetail) {
+  init(model: MovieDetail, onTapAction: (() -> Void)? = nil) {
     self.model = model
+    self.onTapAction = onTapAction
   }
   
   var body: some View {
@@ -42,7 +44,7 @@ struct MovieDetailCardView: View {
       }
       
       Button {
-        print("예매하기 버튼 눌림")
+        onTapAction?()
       } label: {
         Text("예매하기")
           .frame(maxWidth: .infinity)

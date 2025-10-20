@@ -57,11 +57,7 @@ struct MovieBookView: View {
 #Preview {
   MovieBookView(
     store: Store(
-      initialState: MovieBookFeature.State(
-        movieId: "12345",
-        posterPath: "/bUrReoZFLGti6ehkBW0xw8f12MT.jpg",
-        title: "The Dark Knight"
-      )
+      initialState: MovieBookFeature.State(movieDetail: MovieDetail.mockData)
     ) {
       MovieBookFeature()
     }

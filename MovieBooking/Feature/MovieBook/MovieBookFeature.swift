@@ -10,16 +10,23 @@ import ComposableArchitecture
 import SwiftUI
 
 @Reducer
-struct MovieBookFeature {
+public struct MovieBookFeature {
   @Dependency(\.fetchMovieTimesUseCase) var fetchMovieTimesUseCase
   @Dependency(\.fetchMovieTheatersUseCase) var fetchMovieTheatersUseCase
   @Dependency(\.createBookingUseCase) var createBookingUseCase
-
+  public init() { }
   @ObservableState
-  struct State: Equatable, Sendable {
-    let movieId: String
-    let posterPath: String
-    let title: String
+  public struct State: Equatable, Sendable {
+    private let model: MovieDetail
+    var movieId: Int {
+      return model.id
+    }
+    var posterPath: String {
+      return model.posterPath ?? ""
+    }
+    var title: String {
+      return model.title
+    }
     var theaters: [MovieTheater] = []
     var showTimes: [ShowTime] = []
     var selectedTheater: MovieTheater?
@@ -28,16 +35,20 @@ struct MovieBookFeature {
     let pricePerTicket: Int = 13000
     var isBookingInProgress: Bool = false
     @Presents var alert: AlertState<Action.Alert>?
+    
+    init(movieDetail: MovieDetail) {
+      self.model = movieDetail
+    }
   }
 
-  enum Action: ViewAction, BindableAction {
+  public enum Action: ViewAction, BindableAction {
     case binding(BindingAction<State>)
     case view(ViewAction)
     case async(AsyncAction)
     case inner(InnerAction)
     case alert(PresentationAction<Alert>)
 
-    enum ViewAction {
+    public enum ViewAction {
       case onAppear
       case theaterSelected(MovieTheater)
       case showTimeSelected(ShowTime)
@@ -45,24 +56,24 @@ struct MovieBookFeature {
       case onTapBookButton
     }
 
-    enum AsyncAction {
+    public enum AsyncAction {
       case fetchTheatersResponse(Result<[MovieTheater], Error>)
       case fetchTimesResponse(Result<[ShowTime], Error>)
       case createBookingResponse(Result<BookingInfo, Error>)
     }
 
-    enum InnerAction {
+    public enum InnerAction {
       case fetchTheaters
       case fetchTimes(theaterId: Int)
       case createBooking
     }
 
-    enum Alert {
+    public enum Alert {
       case confirmBookingSuccess
     }
   }
 
-  var body: some Reducer<State, Action>{
+  public var body: some Reducer<State, Action>{
     BindingReducer()
     Reduce { state, action in
       switch action {
@@ -200,7 +211,7 @@ extension MovieBookFeature {
           .async(
             .fetchTheatersResponse(
               Result {
-                try await fetchMovieTheatersUseCase.execute(movieId)
+                try await fetchMovieTheatersUseCase.execute(String(movieId))
               }
             )
           )
@@ -213,7 +224,7 @@ extension MovieBookFeature {
           .async(
             .fetchTimesResponse(
               Result {
-                try await fetchMovieTimesUseCase.execute(movieId, at: theaterId)
+                try await fetchMovieTimesUseCase.execute(String(movieId), at: theaterId)
               }
             )
           )
@@ -229,7 +240,7 @@ extension MovieBookFeature {
       state.isBookingInProgress = true
 
       let bookingInfo = BookingInfo(
-        movieId: state.movieId,
+        movieId: String(state.movieId),
         movieTitle: state.title,
         posterPath: state.posterPath,
         theaterId: theater.id,
@@ -252,5 +263,21 @@ extension MovieBookFeature {
         )
       }
     }
+  }
+}
+
+extension MovieBookFeature.State: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(movieId)
+    hasher.combine(posterPath)
+    hasher.combine(title)
+    hasher.combine(theaters)
+    hasher.combine(showTimes)
+    hasher.combine(selectedTheater)
+    hasher.combine(selectedShowTime)
+    hasher.combine(numberOfPeople)
+    hasher.combine(pricePerTicket)
+    hasher.combine(isBookingInProgress)
+    // @Presents var alert는 Hashable이 아니므로 제외
   }
 }

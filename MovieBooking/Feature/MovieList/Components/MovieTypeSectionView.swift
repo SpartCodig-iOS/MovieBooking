@@ -12,12 +12,20 @@ struct MovieTypeSectionView: View {
   private let headerText: String
   private let movies: [Movie]
   @State private var currentIndex: Int = 0
+  private var onTapAction: ((Movie) -> Void)?
 
-  init(cardCount: Int, headerText: String, movies: [Movie], currentIndex: Int = 0) {
+  init(
+    cardCount: Int,
+    headerText: String,
+    movies: [Movie],
+    currentIndex: Int = 0,
+    onTapAction: ((Movie) -> Void)? = nil
+  ) {
     self.cardCount = cardCount
     self.headerText = headerText
     self.movies = movies
     self.currentIndex = currentIndex
+    self.onTapAction = onTapAction
   }
 
   var body: some View {
@@ -45,6 +53,9 @@ struct MovieTypeSectionView: View {
                 posterPath: movie.posterPath
               )
               .id(movie.id)
+              .onTapGesture {
+                onTapAction?(movie)
+              }
             }
           }
         }
