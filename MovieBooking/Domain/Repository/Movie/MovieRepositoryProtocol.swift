@@ -13,6 +13,7 @@ protocol MovieRepositoryProtocol {
   func fetchUpcomingMovies() async throws -> [Movie]
   func fetchPopularMovies() async throws -> [Movie]
   func fetchMovieDetail(id: String) async throws -> MovieDetail
+  func searchMovies(query: String) async throws -> [Movie]
 }
 
 private enum MovieRepositoryKey: DependencyKey {

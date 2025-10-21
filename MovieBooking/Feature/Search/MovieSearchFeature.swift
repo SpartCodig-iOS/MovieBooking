@@ -10,51 +10,46 @@ import Foundation
 
 @Reducer
 public struct MovieSearchFeature {
+  @Dependency(\.searchMovieUseCase) var searchMovieUseCase
+  
   @ObservableState
   public struct State: Equatable {
-    var nowPlayingMovies: [Movie] = []
-    var upcomingMovies: [Movie] = []
-    var popularMovies: [Movie] = []
+    var movies: [Movie] = []
     var searchText: String = ""
   }
 
   public enum Action: BindableAction {
-    case updateMovieLists(nowPlaying: [Movie], upcoming: [Movie], popular: [Movie])
+    case updateMovieLists([Movie])
     case binding(BindingAction<State>)
+    case searchTextChanged
   }
-
+  
+  private enum CancelID { case search }
+  
   public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
       switch action {
-      case let .updateMovieLists(nowPlaying, upcoming, popular):
-        state.nowPlayingMovies = nowPlaying
-        state.upcomingMovies = upcoming
-        state.popularMovies = popular
+      case let .updateMovieLists(movies):
+        state.movies = movies
         return .none
-
+      case .binding(\.searchText):
+        return .send(.searchTextChanged)
+          .debounce(id: CancelID.search, for: 0.5, scheduler: DispatchQueue.main)
       case .binding:
         return .none
+      case .searchTextChanged:
+        let query = state.searchText
+        guard !query.isEmpty else {
+          state.movies = []
+          return .none
+        }
+        
+        return .run { send in
+          let movies = try await searchMovieUseCase.execute(query)
+          await send(.updateMovieLists(movies))
+        }
       }
-    }
-  }
-}
-
-
-extension MovieSearchFeature.State {
-  var trimmedKeyword: String {
-    searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-  }
-
-  var aggregatedMovies: [Movie] {
-    Array(Set(nowPlayingMovies + upcomingMovies + popularMovies))
-  }
-
-  var filteredMovies: [Movie] {
-    guard !trimmedKeyword.isEmpty else { return [] }
-
-    return aggregatedMovies.filter {
-      $0.title.localizedCaseInsensitiveContains(trimmedKeyword)
     }
   }
 }

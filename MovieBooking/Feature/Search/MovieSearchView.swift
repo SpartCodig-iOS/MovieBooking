@@ -18,10 +18,10 @@ struct MovieSearchView: View {
           .padding(.bottom, 20)
 
         Group {
-          if store.trimmedKeyword.isEmpty {
+          if store.movies.isEmpty {
             EmptySearchView()
           } else {
-            SearchView(movies: store.filteredMovies)
+            SearchView(movies: store.movies)
           }
         }
         .frame(maxHeight: .infinity)
@@ -35,11 +35,7 @@ struct MovieSearchView: View {
 #Preview {
   MovieSearchView(
     store: Store(
-      initialState: MovieSearchFeature.State(
-        nowPlayingMovies: Movie.mockData,
-        upcomingMovies: Movie.mockData,
-        popularMovies: Movie.mockData
-      )
+      initialState: MovieSearchFeature.State()
     ) {
       MovieSearchFeature()
     }

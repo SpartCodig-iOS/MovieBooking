@@ -7,8 +7,9 @@
 
 import Foundation
 
-struct MovieRepository: MovieRepositoryProtocol {
+final actor MovieRepository: MovieRepositoryProtocol {
   private let dataSource: MovieDataSource
+  private var cachedMovies: [Movie] = []
 
   init(dataSource: MovieDataSource = DefaultMovieDataSource()) {
     self.dataSource = dataSource
@@ -16,7 +17,9 @@ struct MovieRepository: MovieRepositoryProtocol {
 
   func fetchMovies(for category: MovieCategory, page: Int = 1) async throws -> [Movie] {
     let dto = try await dataSource.movieList(category: category, page: page)
-    return dto.results.map { $0.toDomain() }
+    let result = dto.results.map { $0.toDomain() }
+    cachedMovies.append(contentsOf: result)
+    return result
   }
 
   func fetchNowPlayingMovies() async throws -> [Movie] {
@@ -33,5 +36,15 @@ struct MovieRepository: MovieRepositoryProtocol {
   
   func fetchMovieDetail(id: String) async throws -> MovieDetail {
     try await dataSource.movieDetail(id, MovieDetailRequestDTO()).toDomain()
+  }
+  
+  func searchMovies(query searchText: String) async throws -> [Movie] {
+    let trimmedKeyword = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    let aggregatedMovies = Array(Set(cachedMovies))
+    guard !trimmedKeyword.isEmpty else { return [] }
+
+    return aggregatedMovies.filter {
+      $0.title.localizedCaseInsensitiveContains(trimmedKeyword)
+    }
   }
 }

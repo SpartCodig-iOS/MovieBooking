@@ -24,4 +24,8 @@ struct MockMovieRepository: MovieRepositoryProtocol {
   func fetchMovieDetail(id: String) async throws -> MovieDetail {
     throw NetworkError.httpError(statusCode: 404, response: nil, data: nil)
   }
+  
+  func searchMovies(query: String) async throws -> [Movie] {
+    return Movie.mockData
+  }
 }
