@@ -11,7 +11,8 @@ import Foundation
 @Reducer
 public struct MovieSearchFeature {
   @Dependency(\.searchMovieUseCase) var searchMovieUseCase
-  
+  @Dependency(\.mainQueue) var mainQueue
+
   @ObservableState
   public struct State: Equatable {
     var movies: [Movie] = []
@@ -24,8 +25,8 @@ public struct MovieSearchFeature {
     case searchTextChanged
   }
   
-  private enum CancelID { case search }
-  
+  nonisolated enum CancelID: Hashable, Sendable { case search }
+
   public var body: some Reducer<State, Action> {
     BindingReducer()
     Reduce { state, action in
@@ -35,7 +36,8 @@ public struct MovieSearchFeature {
         return .none
       case .binding(\.searchText):
         return .send(.searchTextChanged)
-          .debounce(id: CancelID.search, for: 0.5, scheduler: DispatchQueue.main)
+          .debounce(id: CancelID.search, for: 0.5, scheduler: mainQueue)
+
       case .binding:
         return .none
       case .searchTextChanged:
